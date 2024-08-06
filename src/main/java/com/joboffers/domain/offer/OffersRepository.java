@@ -7,5 +7,7 @@ interface OffersRepository {
     
     List<Offer> findAll();
     
-    Optional<Offer> findById(String id);
+    Optional<Offer> findById(Long id);
+    
+    Offer save(Offer offer);
 }

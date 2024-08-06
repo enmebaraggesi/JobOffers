@@ -16,9 +16,15 @@ public class OfferFacade {
         return OfferMapper.mapOfferListToOfferDtoList(offers);
     }
     
-    OfferDto findOfferById(final String id) {
+    OfferDto findOfferById(final Long id) {
         Offer offer = repository.findById(id)
                                 .orElseThrow(() -> new OfferNotFoundException("No offer found with id " + id));
         return OfferMapper.mapOfferToOfferDto(offer);
+    }
+    
+    OfferDto saveOffer(final OfferDto offerDto) {
+        Offer offer = OfferMapper.mapOfferDtoToOffer(offerDto);
+        Offer saved = repository.save(offer);
+        return OfferMapper.mapOfferToOfferDto(saved);
     }
 }

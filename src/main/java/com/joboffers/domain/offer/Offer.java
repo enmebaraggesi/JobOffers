@@ -1,6 +1,9 @@
 package com.joboffers.domain.offer;
 
-record Offer(String id,
+import lombok.Builder;
+
+@Builder
+record Offer(Long id,
              String position,
              String company,
              String salary,
