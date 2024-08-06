@@ -1,5 +1,9 @@
 package com.joboffers.domain.offer;
 
-public record Offer() {
-
+record Offer(String id,
+             String position,
+             String company,
+             String salary,
+             String url) {
+    
 }

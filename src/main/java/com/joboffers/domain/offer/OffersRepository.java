@@ -1,5 +1,8 @@
 package com.joboffers.domain.offer;
 
-interface OffersRepository {
+import java.util.List;
 
+interface OffersRepository {
+    
+    List<Offer> findAll();
 }
