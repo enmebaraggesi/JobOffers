@@ -1,6 +1,7 @@
 package com.joboffers.domain.offer;
 
 import com.joboffers.domain.offer.dto.OfferDto;
+import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
 import com.joboffers.domain.offer.error.OfferNotFoundException;
 import org.junit.jupiter.api.Test;
 
@@ -94,6 +95,31 @@ class OfferFacadeTest {
                                      .build();
         assertThat(response1).isEqualTo(expected1);
         assertThat(response2).isEqualTo(expected2);
+    }
+    
+    @Test
+    void should_throw_an_error_while_saving_offer_with_duplicate_url() {
+        //given
+        String url = "https://example.com";
+        OfferDto offerDto1 = OfferDto.builder()
+                                    .position("testPosition1")
+                                    .company("testCompany1")
+                                    .salary("1")
+                                    .url(url)
+                                    .build();
+        OfferDto offerDto2 = OfferDto.builder()
+                                     .position("testPosition2")
+                                     .company("testCompany2")
+                                     .salary("2")
+                                     .url(url)
+                                     .build();
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        facade.saveOffer(offerDto1);
+        //when
+        Exception caught = catchException(() -> facade.saveOffer(offerDto2));
+        //then
+        assertThat(caught).isInstanceOf(DuplicateOfferUrlException.class);
+        assertThat(caught.getMessage()).isEqualTo("There is already offer with url " + url);
     }
     
     @Test

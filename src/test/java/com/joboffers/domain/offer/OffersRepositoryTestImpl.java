@@ -36,4 +36,13 @@ class OffersRepositoryTestImpl implements OffersRepository {
         inMemoryDatabase.put(id, toSave);
         return toSave;
     }
+    
+    @Override
+    public boolean findByUrl(final String url) {
+        return inMemoryDatabase.values()
+                               .stream()
+                               .anyMatch(offer -> offer.url()
+                                                       .equals(url));
+    }
 }
+

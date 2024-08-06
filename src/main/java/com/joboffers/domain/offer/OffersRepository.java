@@ -10,4 +10,6 @@ interface OffersRepository {
     Optional<Offer> findById(Long id);
     
     Offer save(Offer offer);
+    
+    boolean findByUrl(String url);
 }
