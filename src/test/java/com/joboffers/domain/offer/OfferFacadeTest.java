@@ -57,4 +57,82 @@ class OfferFacadeTest {
                                     .build();
         assertThat(response).isEqualTo(expected);
     }
+    
+    @Test
+    void should_save_two_offers_and_return_them_properly() {
+        //given
+        OfferDto offerDto1 = OfferDto.builder()
+                                     .position("testPosition1")
+                                     .company("testCompany1")
+                                     .salary("1")
+                                     .url("https://example.com")
+                                     .build();
+        OfferDto offerDto2 = OfferDto.builder()
+                                     .position("testPosition2")
+                                     .company("testCompany2")
+                                     .salary("2")
+                                     .url("https://example.com")
+                                     .build();
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        //when
+        OfferDto response1 = facade.saveOffer(offerDto1);
+        OfferDto response2 = facade.saveOffer(offerDto2);
+        //then
+        OfferDto expected1 = OfferDto.builder()
+                                     .id(1L)
+                                     .position("testPosition1")
+                                     .company("testCompany1")
+                                     .salary("1")
+                                     .url("https://example.com")
+                                     .build();
+        OfferDto expected2 = OfferDto.builder()
+                                     .id(2L)
+                                     .position("testPosition2")
+                                     .company("testCompany2")
+                                     .salary("2")
+                                     .url("https://example.com")
+                                     .build();
+        assertThat(response1).isEqualTo(expected1);
+        assertThat(response2).isEqualTo(expected2);
+    }
+    
+    @Test
+    void should_find_two_offers_when_there_are_two_offers_in_db() {
+        //given
+        OfferDto offerDto1 = OfferDto.builder()
+                                     .position("testPosition1")
+                                     .company("testCompany1")
+                                     .salary("1")
+                                     .url("https://example.com")
+                                     .build();
+        OfferDto offerDto2 = OfferDto.builder()
+                                     .position("testPosition2")
+                                     .company("testCompany2")
+                                     .salary("2")
+                                     .url("https://example.com")
+                                     .build();
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        facade.saveOffer(offerDto1);
+        facade.saveOffer(offerDto2);
+        //when
+        List<OfferDto> response = facade.findAllOffers();
+        //then
+        OfferDto expected1 = OfferDto.builder()
+                                     .id(1L)
+                                     .position("testPosition1")
+                                     .company("testCompany1")
+                                     .salary("1")
+                                     .url("https://example.com")
+                                     .build();
+        OfferDto expected2 = OfferDto.builder()
+                                     .id(2L)
+                                     .position("testPosition2")
+                                     .company("testCompany2")
+                                     .salary("2")
+                                     .url("https://example.com")
+                                     .build();
+        assertThat(response).isNotEmpty();
+        assertThat(response).hasSize(2);
+        assertThat(response).contains(expected1, expected2);
+    }
 }
