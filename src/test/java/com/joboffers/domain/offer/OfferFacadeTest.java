@@ -135,4 +135,29 @@ class OfferFacadeTest {
         assertThat(response).hasSize(2);
         assertThat(response).contains(expected1, expected2);
     }
+    
+    @Test
+    void should_find_an_offer_by_id() {
+        //given
+        Long id = 1L;
+        OfferDto offerDto = OfferDto.builder()
+                                    .position("testPosition")
+                                    .company("testCompany")
+                                    .salary("0")
+                                    .url("https://example.com")
+                                    .build();
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        facade.saveOffer(offerDto);
+        //when
+        OfferDto response = facade.findOfferById(id);
+        //then
+        OfferDto expected = OfferDto.builder()
+                                    .id(1L)
+                                    .position("testPosition")
+                                    .company("testCompany")
+                                    .salary("0")
+                                    .url("https://example.com")
+                                    .build();
+        assertThat(response).isEqualTo(expected);
+    }
 }
