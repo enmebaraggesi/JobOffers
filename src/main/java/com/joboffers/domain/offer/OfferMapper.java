@@ -17,4 +17,14 @@ class OfferMapper {
                                            .build())
                      .toList();
     }
+    
+    static OfferDto mapOfferToOfferDto(final Offer offer) {
+        return OfferDto.builder()
+                       .id(offer.id())
+                       .position(offer.position())
+                       .company(offer.company())
+                       .salary(offer.salary())
+                       .url(offer.url())
+                       .build();
+    }
 }
