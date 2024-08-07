@@ -11,5 +11,5 @@ interface OffersRepository {
     
     Offer save(Offer offer);
     
-    boolean findByUrl(String url);
+    Optional<Offer> findByUrl(String url);
 }

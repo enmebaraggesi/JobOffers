@@ -38,11 +38,12 @@ class OffersRepositoryTestImpl implements OffersRepository {
     }
     
     @Override
-    public boolean findByUrl(final String url) {
+    public Optional<Offer> findByUrl(final String url) {
         return inMemoryDatabase.values()
                                .stream()
-                               .anyMatch(offer -> offer.url()
-                                                       .equals(url));
+                               .filter(offer -> offer.url()
+                                                     .equals(url))
+                               .findFirst();
     }
 }
 

@@ -12,6 +12,7 @@ import java.util.List;
 public class OfferFacade {
     
     private final OffersRepository repository;
+    private final ExternalFetchable offerFetcher;
     
     public List<OfferDto> findAllOffers() {
         List<Offer> offers = repository.findAll();
@@ -25,12 +26,18 @@ public class OfferFacade {
     }
     
     OfferDto saveOffer(final OfferRequestDto requestDto) {
-        String url = requestDto.url();
-        if (repository.findByUrl(url)) {
-            throw new DuplicateOfferUrlException("There is already offer with url " + url);
+        if (OfferInspector.isDuplicateUrl(repository, requestDto)) {
+            throw new DuplicateOfferUrlException("There is already offer with url " + requestDto.url());
         }
         Offer offer = OfferMapper.mapOfferRequestDtoToOffer(requestDto);
         Offer saved = repository.save(offer);
         return OfferMapper.mapOfferToOfferDto(saved);
+    }
+    
+    void fetchNewOffers() {
+        List<OfferRequestDto> fetchedOffers = offerFetcher.fetchNewOffers();
+        List<OfferDto> allOffers = this.findAllOffers();
+        List<OfferRequestDto> filteredRequestDtos = OfferInspector.filterOutExistingOffers(fetchedOffers, allOffers);
+        filteredRequestDtos.forEach(this::saveOffer);
     }
 }

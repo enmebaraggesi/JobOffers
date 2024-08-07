@@ -6,6 +6,7 @@ import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
 import com.joboffers.domain.offer.error.OfferNotFoundException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +19,8 @@ class OfferFacadeTest {
     @Test
     void should_find_no_offer_when_there_are_no_offers() {
         //given
-        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
         //when
         List<OfferDto> response = facade.findAllOffers();
         //then
@@ -29,7 +31,9 @@ class OfferFacadeTest {
     void should_throw_an_error_and_find_no_offer_by_id_when_there_are_no_offers() {
         //given
         Long id = 1L;
-        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
+        assertThat(facade.findAllOffers()).isEmpty();
         //when
         Exception caught = catchException(() -> facade.findOfferById(id));
         //then
@@ -46,7 +50,9 @@ class OfferFacadeTest {
                                                     .salary("0")
                                                     .url("https://example.com")
                                                     .build();
-        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
+        assertThat(facade.findAllOffers()).isEmpty();
         //when
         OfferDto response = facade.saveOffer(requestDto);
         //then
@@ -75,7 +81,9 @@ class OfferFacadeTest {
                                                      .salary("2")
                                                      .url("https://example2.com")
                                                      .build();
-        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
+        assertThat(facade.findAllOffers()).isEmpty();
         //when
         OfferDto response1 = facade.saveOffer(requestDto1);
         OfferDto response2 = facade.saveOffer(requestDto2);
@@ -114,7 +122,8 @@ class OfferFacadeTest {
                                                      .salary("2")
                                                      .url(url)
                                                      .build();
-        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
         facade.saveOffer(requestDto1);
         //when
         Exception caught = catchException(() -> facade.saveOffer(requestDto2));
@@ -138,7 +147,8 @@ class OfferFacadeTest {
                                                      .salary("2")
                                                      .url("https://example2.com")
                                                      .build();
-        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
         facade.saveOffer(requestDto1);
         facade.saveOffer(requestDto2);
         //when
@@ -173,7 +183,9 @@ class OfferFacadeTest {
                                                   .salary("0")
                                                   .url("https://example.com")
                                                   .build();
-        OfferFacade facade = OfferFacadeConfig.createForTest(repository);
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
+        assertThat(facade.findAllOffers()).isEmpty();
         facade.saveOffer(offerDto);
         //when
         OfferDto response = facade.findOfferById(id);
@@ -186,5 +198,34 @@ class OfferFacadeTest {
                                     .url("https://example.com")
                                     .build();
         assertThat(response).isEqualTo(expected);
+    }
+    
+    @Test
+    void should_fetch_new_offers_from_external_if_there_are_no_offers_in_db() {
+        //given
+        List<OfferRequestDto> requestDtoList = List.of(
+                OfferRequestDto.builder()
+                               .position("testPosition1")
+                               .company("testCompany1")
+                               .salary("1")
+                               .url("https://example1.com")
+                               .build(),
+                OfferRequestDto.builder()
+                               .position("testPosition2")
+                               .company("testCompany2")
+                               .salary("2")
+                               .url("https://example2.com")
+                               .build()
+        );
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(requestDtoList);
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
+        assertThat(facade.findAllOffers()).isEmpty();
+        //when
+        facade.fetchNewOffers();
+        List<OfferDto> response = facade.findAllOffers();
+        //then
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).url()).containsAnyOf("https://example1.com", "https://example2.com");
+        assertThat(response.get(1).url()).containsAnyOf("https://example1.com", "https://example2.com");
     }
 }
