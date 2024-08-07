@@ -228,4 +228,48 @@ class OfferFacadeTest {
         assertThat(response.get(0).url()).containsAnyOf("https://example1.com", "https://example2.com");
         assertThat(response.get(1).url()).containsAnyOf("https://example1.com", "https://example2.com");
     }
+    
+    @Test
+    void should_save_only_2_from_fetched_offers_if_there_is_already_one_of_them_in_db() {
+        //given
+        OfferRequestDto existing = OfferRequestDto.builder()
+                                                  .position("testPosition1")
+                                                  .company("testCompany1")
+                                                  .salary("1")
+                                                  .url("https://example1.com")
+                                                  .build();
+        List<OfferRequestDto> requestDtoList = List.of(
+                existing,
+                OfferRequestDto.builder()
+                               .position("testPosition2")
+                               .company("testCompany2")
+                               .salary("2")
+                               .url("https://example2.com")
+                               .build(),
+                OfferRequestDto.builder()
+                               .position("testPosition3")
+                               .company("testCompany3")
+                               .salary("3")
+                               .url("https://example3.com")
+                               .build()
+        );
+        ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(requestDtoList);
+        OfferFacade facade = OfferFacadeConfig.createForTest(repository, externalFetcher);
+        facade.saveOffer(existing);
+        assertThat(facade.findAllOffers()).hasSize(1);
+        //when
+        facade.fetchNewOffers();
+        List<OfferDto> response = facade.findAllOffers();
+        //then
+        assertThat(response).hasSize(3);
+        assertThat(response.get(0).url()).containsAnyOf("https://example1.com",
+                                                        "https://example2.com",
+                                                        "https://example3.com");
+        assertThat(response.get(1).url()).containsAnyOf("https://example1.com",
+                                                        "https://example2.com",
+                                                        "https://example3.com");
+        assertThat(response.get(2).url()).containsAnyOf("https://example1.com",
+                                                        "https://example2.com",
+                                                        "https://example3.com");
+    }
 }
