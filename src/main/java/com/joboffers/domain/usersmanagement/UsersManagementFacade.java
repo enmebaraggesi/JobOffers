@@ -17,6 +17,12 @@ public class UsersManagementFacade {
         return UserMapper.mapUserListToUserResponseDtoList(users);
     }
     
+    UserResponseDto findUserByName(final String name) {
+        return repository.findByName(name)
+                         .map(UserMapper::mapUserToUserResponseDto)
+                         .orElseThrow(() -> new UserNotFoundException("No user found with name " + name));
+    }
+    
     UserResponseDto findUserById(final Long id) {
         return repository.findById(id)
                          .map(UserMapper::mapUserToUserResponseDto)

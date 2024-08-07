@@ -19,6 +19,14 @@ class UsersRepositoryTestImpl implements UsersRepository {
     }
     
     @Override
+    public Optional<User> findByName(final String name) {
+        return inMemoryDatabase.values()
+                               .stream()
+                               .filter(user -> user.name().equals(name))
+                               .findFirst();
+    }
+    
+    @Override
     public Optional<User> findById(final Long id) {
         return Optional.ofNullable(inMemoryDatabase.get(id));
     }

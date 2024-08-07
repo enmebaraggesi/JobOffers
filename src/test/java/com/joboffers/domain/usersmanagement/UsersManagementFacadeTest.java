@@ -36,6 +36,19 @@ class UsersManagementFacadeTest {
     }
     
     @Test
+    void should_throw_exception_when_there_is_no_user_with_such_name() {
+        //given
+        String name = "user1";
+        UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
+        assertThat(facade.findAllUsers()).isEmpty();
+        //when
+        Exception caught = catchException(() -> facade.findUserByName(name));
+        //then
+        assertThat(caught).isInstanceOf(UserNotFoundException.class);
+        assertThat(caught.getMessage()).isEqualTo("No user found with name " + name);
+    }
+    
+    @Test
     void should_save_user_properly() {
         //given
         UserRequestDto requestDto = UserRequestDto.builder()
@@ -112,6 +125,31 @@ class UsersManagementFacadeTest {
         UserResponseDto expected = UserResponseDto.builder()
                                                   .id(id)
                                                   .name("user1")
+                                                  .email("user1@email.com")
+                                                  .password("password1")
+                                                  .build();
+        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(expected);
+    }
+    
+    @Test
+    void should_find_user_by_name() {
+        //given
+        String name = "user1";
+        UserRequestDto requestDto = UserRequestDto.builder()
+                                                  .name(name)
+                                                  .email("user1@email.com")
+                                                  .password("password1")
+                                                  .build();
+        UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
+        facade.saveUser(requestDto);
+        assertThat(facade.findAllUsers()).hasSize(1);
+        //when
+        UserResponseDto response = facade.findUserByName(name);
+        //then
+        UserResponseDto expected = UserResponseDto.builder()
+                                                  .id(1L)
+                                                  .name(name)
                                                   .email("user1@email.com")
                                                   .password("password1")
                                                   .build();
