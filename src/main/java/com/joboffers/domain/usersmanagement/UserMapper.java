@@ -1,6 +1,5 @@
 package com.joboffers.domain.usersmanagement;
 
-import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
 
@@ -28,13 +27,5 @@ class UserMapper {
                    .email(requestDto.email())
                    .password(requestDto.password())
                    .build();
-    }
-    
-    static UserRegistrationResponseDto mapUserRegistrationResponseDto(final User user, boolean created) {
-        return UserRegistrationResponseDto.builder()
-                                          .id(user.id())
-                                          .name(user.name())
-                                          .created(created)
-                                          .build();
     }
 }
