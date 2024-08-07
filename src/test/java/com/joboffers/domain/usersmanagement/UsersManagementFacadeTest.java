@@ -1,5 +1,6 @@
 package com.joboffers.domain.usersmanagement;
 
+import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
 import com.joboffers.domain.usersmanagement.error.UserNotFoundException;
@@ -59,16 +60,12 @@ class UsersManagementFacadeTest {
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         assertThat(facade.findAllUsers()).isEmpty();
         //when
-        UserResponseDto response = facade.saveUser(requestDto);
+        UserRegistrationResponseDto response = facade.saveUser(requestDto);
         //then
-        UserResponseDto expected = UserResponseDto.builder()
-                                                  .id(1L)
-                                                  .name("user1")
-                                                  .email("user1@email.com")
-                                                  .password("password1")
-                                                  .build();
         assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
+        assertThat(response.created()).isTrue();
+        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.name()).isEqualTo("user1");
     }
     
     @Test
@@ -87,24 +84,20 @@ class UsersManagementFacadeTest {
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         assertThat(facade.findAllUsers()).isEmpty();
         //when
-        UserResponseDto response1 = facade.saveUser(requestDto1);
-        UserResponseDto response2 = facade.saveUser(requestDto2);
+        UserRegistrationResponseDto response1 = facade.saveUser(requestDto1);
+        UserRegistrationResponseDto response2 = facade.saveUser(requestDto2);
         //then
-        UserResponseDto expected1 = UserResponseDto.builder()
-                                                   .id(1L)
-                                                   .name("user1")
-                                                   .email("user1@email.com")
-                                                   .password("password1")
-                                                   .build();
-        UserResponseDto expected2 = UserResponseDto.builder()
-                                                   .id(2L)
-                                                   .name("user2")
-                                                   .email("user2@email.com")
-                                                   .password("password2")
-                                                   .build();
         assertThat(facade.findAllUsers()).hasSize(2);
-        assertThat(response1).isEqualTo(expected1);
-        assertThat(response2).isEqualTo(expected2);
+        assertThat(response1).isEqualTo(UserRegistrationResponseDto.builder()
+                                                                   .id(1L)
+                                                                   .name("user1")
+                                                                   .created(true)
+                                                                   .build());
+        assertThat(response2).isEqualTo(UserRegistrationResponseDto.builder()
+                                                                   .id(2L)
+                                                                   .name("user2")
+                                                                   .created(true)
+                                                                   .build());
     }
     
     @Test
@@ -126,7 +119,6 @@ class UsersManagementFacadeTest {
                                                   .id(id)
                                                   .name("user1")
                                                   .email("user1@email.com")
-                                                  .password("password1")
                                                   .build();
         assertThat(response).isNotNull();
         assertThat(response).isEqualTo(expected);
@@ -151,7 +143,6 @@ class UsersManagementFacadeTest {
                                                   .id(1L)
                                                   .name(name)
                                                   .email("user1@email.com")
-                                                  .password("password1")
                                                   .build();
         assertThat(response).isNotNull();
         assertThat(response).isEqualTo(expected);

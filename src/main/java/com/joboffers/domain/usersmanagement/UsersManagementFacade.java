@@ -1,5 +1,6 @@
 package com.joboffers.domain.usersmanagement;
 
+import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
 import com.joboffers.domain.usersmanagement.error.UserNotFoundException;
@@ -10,7 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 public class UsersManagementFacade {
     
+    // todo message enum
+    
     private final UsersRepository repository;
+    private final UserInspector inspector;
     
     public List<UserResponseDto> findAllUsers() {
         List<User> users = repository.findAll();
@@ -29,9 +33,12 @@ public class UsersManagementFacade {
                          .orElseThrow(() -> new UserNotFoundException("No user found with id " + id));
     }
     
-    UserResponseDto saveUser(final UserRequestDto requestDto) {
-        User user = UserMapper.mapUserRequestDtoToUser(requestDto);
-        User saved = repository.save(user);
-        return UserMapper.mapUserToUserResponseDto(saved);
+    UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {
+        if (inspector.inspectRegistrationRequest(requestDto)) {
+            User user = UserMapper.mapUserRequestDtoToUser(requestDto);
+            User saved = repository.save(user);
+            return new UserRegistrationResponseDto(saved.id(), saved.name(), true);
+        }
+        return new UserRegistrationResponseDto(null, requestDto.name(), false);
     }
 }
