@@ -1,6 +1,7 @@
 package com.joboffers.domain.offer;
 
 import com.joboffers.domain.offer.dto.OfferDto;
+import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
 import com.joboffers.domain.offer.error.OfferNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -39,15 +40,15 @@ class OfferFacadeTest {
     @Test
     void should_save_and_return_offer_properly() {
         //given
-        OfferDto offerDto = OfferDto.builder()
-                                    .position("testPosition")
-                                    .company("testCompany")
-                                    .salary("0")
-                                    .url("https://example.com")
-                                    .build();
+        OfferRequestDto requestDto = OfferRequestDto.builder()
+                                                    .position("testPosition")
+                                                    .company("testCompany")
+                                                    .salary("0")
+                                                    .url("https://example.com")
+                                                    .build();
         OfferFacade facade = OfferFacadeConfig.createForTest(repository);
         //when
-        OfferDto response = facade.saveOffer(offerDto);
+        OfferDto response = facade.saveOffer(requestDto);
         //then
         OfferDto expected = OfferDto.builder()
                                     .id(1L)
@@ -62,36 +63,36 @@ class OfferFacadeTest {
     @Test
     void should_save_two_offers_and_return_them_properly() {
         //given
-        OfferDto offerDto1 = OfferDto.builder()
-                                     .position("testPosition1")
-                                     .company("testCompany1")
-                                     .salary("1")
-                                     .url("https://example.com")
-                                     .build();
-        OfferDto offerDto2 = OfferDto.builder()
-                                     .position("testPosition2")
-                                     .company("testCompany2")
-                                     .salary("2")
-                                     .url("https://example.com")
-                                     .build();
+        OfferRequestDto requestDto1 = OfferRequestDto.builder()
+                                                     .position("testPosition1")
+                                                     .company("testCompany1")
+                                                     .salary("1")
+                                                     .url("https://example1.com")
+                                                     .build();
+        OfferRequestDto requestDto2 = OfferRequestDto.builder()
+                                                     .position("testPosition2")
+                                                     .company("testCompany2")
+                                                     .salary("2")
+                                                     .url("https://example2.com")
+                                                     .build();
         OfferFacade facade = OfferFacadeConfig.createForTest(repository);
         //when
-        OfferDto response1 = facade.saveOffer(offerDto1);
-        OfferDto response2 = facade.saveOffer(offerDto2);
+        OfferDto response1 = facade.saveOffer(requestDto1);
+        OfferDto response2 = facade.saveOffer(requestDto2);
         //then
         OfferDto expected1 = OfferDto.builder()
                                      .id(1L)
                                      .position("testPosition1")
                                      .company("testCompany1")
                                      .salary("1")
-                                     .url("https://example.com")
+                                     .url("https://example1.com")
                                      .build();
         OfferDto expected2 = OfferDto.builder()
                                      .id(2L)
                                      .position("testPosition2")
                                      .company("testCompany2")
                                      .salary("2")
-                                     .url("https://example.com")
+                                     .url("https://example2.com")
                                      .build();
         assertThat(response1).isEqualTo(expected1);
         assertThat(response2).isEqualTo(expected2);
@@ -101,22 +102,22 @@ class OfferFacadeTest {
     void should_throw_an_error_while_saving_offer_with_duplicate_url() {
         //given
         String url = "https://example.com";
-        OfferDto offerDto1 = OfferDto.builder()
-                                    .position("testPosition1")
-                                    .company("testCompany1")
-                                    .salary("1")
-                                    .url(url)
-                                    .build();
-        OfferDto offerDto2 = OfferDto.builder()
-                                     .position("testPosition2")
-                                     .company("testCompany2")
-                                     .salary("2")
-                                     .url(url)
-                                     .build();
+        OfferRequestDto requestDto1 = OfferRequestDto.builder()
+                                                     .position("testPosition1")
+                                                     .company("testCompany1")
+                                                     .salary("1")
+                                                     .url(url)
+                                                     .build();
+        OfferRequestDto requestDto2 = OfferRequestDto.builder()
+                                                     .position("testPosition2")
+                                                     .company("testCompany2")
+                                                     .salary("2")
+                                                     .url(url)
+                                                     .build();
         OfferFacade facade = OfferFacadeConfig.createForTest(repository);
-        facade.saveOffer(offerDto1);
+        facade.saveOffer(requestDto1);
         //when
-        Exception caught = catchException(() -> facade.saveOffer(offerDto2));
+        Exception caught = catchException(() -> facade.saveOffer(requestDto2));
         //then
         assertThat(caught).isInstanceOf(DuplicateOfferUrlException.class);
         assertThat(caught.getMessage()).isEqualTo("There is already offer with url " + url);
@@ -125,21 +126,21 @@ class OfferFacadeTest {
     @Test
     void should_find_two_offers_when_there_are_two_offers_in_db() {
         //given
-        OfferDto offerDto1 = OfferDto.builder()
-                                     .position("testPosition1")
-                                     .company("testCompany1")
-                                     .salary("1")
-                                     .url("https://example.com")
-                                     .build();
-        OfferDto offerDto2 = OfferDto.builder()
-                                     .position("testPosition2")
-                                     .company("testCompany2")
-                                     .salary("2")
-                                     .url("https://example.com")
-                                     .build();
+        OfferRequestDto requestDto1 = OfferRequestDto.builder()
+                                                     .position("testPosition1")
+                                                     .company("testCompany1")
+                                                     .salary("1")
+                                                     .url("https://example1.com")
+                                                     .build();
+        OfferRequestDto requestDto2 = OfferRequestDto.builder()
+                                                     .position("testPosition2")
+                                                     .company("testCompany2")
+                                                     .salary("2")
+                                                     .url("https://example2.com")
+                                                     .build();
         OfferFacade facade = OfferFacadeConfig.createForTest(repository);
-        facade.saveOffer(offerDto1);
-        facade.saveOffer(offerDto2);
+        facade.saveOffer(requestDto1);
+        facade.saveOffer(requestDto2);
         //when
         List<OfferDto> response = facade.findAllOffers();
         //then
@@ -148,14 +149,14 @@ class OfferFacadeTest {
                                      .position("testPosition1")
                                      .company("testCompany1")
                                      .salary("1")
-                                     .url("https://example.com")
+                                     .url("https://example1.com")
                                      .build();
         OfferDto expected2 = OfferDto.builder()
                                      .id(2L)
                                      .position("testPosition2")
                                      .company("testCompany2")
                                      .salary("2")
-                                     .url("https://example.com")
+                                     .url("https://example2.com")
                                      .build();
         assertThat(response).isNotEmpty();
         assertThat(response).hasSize(2);
@@ -166,12 +167,12 @@ class OfferFacadeTest {
     void should_find_an_offer_by_id() {
         //given
         Long id = 1L;
-        OfferDto offerDto = OfferDto.builder()
-                                    .position("testPosition")
-                                    .company("testCompany")
-                                    .salary("0")
-                                    .url("https://example.com")
-                                    .build();
+        OfferRequestDto offerDto = OfferRequestDto.builder()
+                                                  .position("testPosition")
+                                                  .company("testCompany")
+                                                  .salary("0")
+                                                  .url("https://example.com")
+                                                  .build();
         OfferFacade facade = OfferFacadeConfig.createForTest(repository);
         facade.saveOffer(offerDto);
         //when

@@ -1,6 +1,7 @@
 package com.joboffers.domain.offer;
 
 import com.joboffers.domain.offer.dto.OfferDto;
+import com.joboffers.domain.offer.dto.OfferRequestDto;
 
 import java.util.List;
 
@@ -28,13 +29,12 @@ class OfferMapper {
                        .build();
     }
     
-    static Offer mapOfferDtoToOffer(final OfferDto offerDto) {
+    static Offer mapOfferRequestDtoToOffer(final OfferRequestDto requestDto) {
         return Offer.builder()
-                    .id(offerDto.id())
-                    .position(offerDto.position())
-                    .company(offerDto.company())
-                    .salary(offerDto.salary())
-                    .url(offerDto.url())
+                    .position(requestDto.position())
+                    .company(requestDto.company())
+                    .salary(requestDto.salary())
+                    .url(requestDto.url())
                     .build();
     }
 }

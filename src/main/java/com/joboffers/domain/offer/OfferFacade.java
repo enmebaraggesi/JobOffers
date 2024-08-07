@@ -1,6 +1,7 @@
 package com.joboffers.domain.offer;
 
 import com.joboffers.domain.offer.dto.OfferDto;
+import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
 import com.joboffers.domain.offer.error.OfferNotFoundException;
 import lombok.AllArgsConstructor;
@@ -23,12 +24,12 @@ public class OfferFacade {
         return OfferMapper.mapOfferToOfferDto(offer);
     }
     
-    OfferDto saveOffer(final OfferDto offerDto) {
-        String url = offerDto.url();
+    OfferDto saveOffer(final OfferRequestDto requestDto) {
+        String url = requestDto.url();
         if (repository.findByUrl(url)) {
             throw new DuplicateOfferUrlException("There is already offer with url " + url);
         }
-        Offer offer = OfferMapper.mapOfferDtoToOffer(offerDto);
+        Offer offer = OfferMapper.mapOfferRequestDtoToOffer(requestDto);
         Offer saved = repository.save(offer);
         return OfferMapper.mapOfferToOfferDto(saved);
     }
