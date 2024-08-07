@@ -62,15 +62,15 @@ class UsersManagementFacadeTest {
     void should_save_two_users_properly() {
         //given
         UserRequestDto requestDto1 = UserRequestDto.builder()
-                                                  .name("user1")
-                                                  .email("user1@email.com")
-                                                  .password("password1")
-                                                  .build();
+                                                   .name("user1")
+                                                   .email("user1@email.com")
+                                                   .password("password1")
+                                                   .build();
         UserRequestDto requestDto2 = UserRequestDto.builder()
-                                                  .name("user2")
-                                                  .email("user2@email.com")
-                                                  .password("password2")
-                                                  .build();
+                                                   .name("user2")
+                                                   .email("user2@email.com")
+                                                   .password("password2")
+                                                   .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         assertThat(facade.findAllUsers()).isEmpty();
         //when
@@ -78,19 +78,44 @@ class UsersManagementFacadeTest {
         UserResponseDto response2 = facade.saveUser(requestDto2);
         //then
         UserResponseDto expected1 = UserResponseDto.builder()
-                                                  .id(1L)
+                                                   .id(1L)
+                                                   .name("user1")
+                                                   .email("user1@email.com")
+                                                   .password("password1")
+                                                   .build();
+        UserResponseDto expected2 = UserResponseDto.builder()
+                                                   .id(2L)
+                                                   .name("user2")
+                                                   .email("user2@email.com")
+                                                   .password("password2")
+                                                   .build();
+        assertThat(facade.findAllUsers()).hasSize(2);
+        assertThat(response1).isEqualTo(expected1);
+        assertThat(response2).isEqualTo(expected2);
+    }
+    
+    @Test
+    void should_find_user_by_id() {
+        //given
+        Long id = 1L;
+        UserRequestDto requestDto = UserRequestDto.builder()
                                                   .name("user1")
                                                   .email("user1@email.com")
                                                   .password("password1")
                                                   .build();
-        UserResponseDto expected2 = UserResponseDto.builder()
-                                                  .id(2L)
-                                                   .name("user2")
-                                                   .email("user2@email.com")
-                                                   .password("password2")
+        UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
+        facade.saveUser(requestDto);
+        assertThat(facade.findAllUsers()).hasSize(1);
+        //when
+        UserResponseDto response = facade.findUserById(id);
+        //then
+        UserResponseDto expected = UserResponseDto.builder()
+                                                  .id(id)
+                                                  .name("user1")
+                                                  .email("user1@email.com")
+                                                  .password("password1")
                                                   .build();
-        assertThat(facade.findAllUsers()).hasSize(2);
-        assertThat(response1).isEqualTo(expected1);
-        assertThat(response2).isEqualTo(expected2);
+        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(expected);
     }
 }
