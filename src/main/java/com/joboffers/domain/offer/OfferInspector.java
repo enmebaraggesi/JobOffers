@@ -1,24 +1,38 @@
 package com.joboffers.domain.offer;
 
-import com.joboffers.domain.offer.dto.OfferDto;
+import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
+import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 class OfferInspector {
     
-    static boolean isDuplicateUrl(final OffersRepository repository, final OfferRequestDto dto) {
+    private final OffersRepository repository;
+    
+    void inspectUrl(final OfferRequestDto dto) {
         String url = dto.url();
+        if (isDuplicateUrl(url)) {
+            throw new DuplicateOfferUrlException("There is already offer with url " + url);
+        }
+    }
+    
+    private boolean isDuplicateUrl(String url) {
         Optional<Offer> foundByUrl = repository.findByUrl(url);
         return foundByUrl.isPresent();
     }
     
-    static List<OfferRequestDto> filterOutExistingOffers(final List<OfferRequestDto> fetched, final List<OfferDto> existing) {
+    List<OfferRequestDto> filterOutExistingOffers(final List<OfferRequestDto> fetched, final List<OfferResponseDto> existing) {
         return fetched.stream()
-                      .filter(offer -> existing.stream()
-                                               .noneMatch(offerDto -> offerDto.url()
-                                                                              .equals(offer.url())))
+                      .filter(offer -> isNoneMatch(existing, offer))
                       .toList();
+    }
+    
+    private boolean isNoneMatch(List<OfferResponseDto> existing, OfferRequestDto offer) {
+        return existing.stream()
+                       .noneMatch(offerDto -> offerDto.url().equals(offer.url()));
     }
 }
