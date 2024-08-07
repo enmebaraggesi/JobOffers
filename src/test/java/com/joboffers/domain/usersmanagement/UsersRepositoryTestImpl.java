@@ -2,6 +2,7 @@ package com.joboffers.domain.usersmanagement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 class UsersRepositoryTestImpl implements UsersRepository {
@@ -13,5 +14,10 @@ class UsersRepositoryTestImpl implements UsersRepository {
         return inMemoryDatabase.values()
                                .stream()
                                .toList();
+    }
+    
+    @Override
+    public Optional<User> findById(final Long id) {
+        return Optional.ofNullable(inMemoryDatabase.get(id));
     }
 }
