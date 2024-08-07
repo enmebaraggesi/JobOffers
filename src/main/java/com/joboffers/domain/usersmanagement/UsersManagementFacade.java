@@ -1,5 +1,6 @@
 package com.joboffers.domain.usersmanagement;
 
+import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
 import com.joboffers.domain.usersmanagement.error.UserNotFoundException;
 import lombok.AllArgsConstructor;
@@ -20,5 +21,11 @@ public class UsersManagementFacade {
         return repository.findById(id)
                          .map(UserMapper::mapUserToUserResponseDto)
                          .orElseThrow(() -> new UserNotFoundException("No user found with id " + id));
+    }
+    
+    UserResponseDto saveUser(final UserRequestDto requestDto) {
+        User user = UserMapper.mapUserRequestDtoToUser(requestDto);
+        User saved = repository.save(user);
+        return UserMapper.mapUserToUserResponseDto(saved);
     }
 }
