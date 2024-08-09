@@ -13,6 +13,8 @@ import static org.assertj.core.api.Assertions.catchException;
 
 class OfferFacadeTest {
     
+    // todo create message enum
+    
     @Test
     void should_find_no_offer_when_there_are_no_offers() {
         //given
@@ -227,3 +229,5 @@ class OfferFacadeTest {
         assertThat(response).hasSize(3);
     }
 }
+
+//todo combine assertions
