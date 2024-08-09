@@ -1,28 +1,25 @@
 package com.joboffers.domain.usersmanagement;
 
-import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 class UserInspector {
     
-    boolean inspectRegistrationRequest(final UserRequestDto dto) {
-        if (isNameInvalid(dto)) {
-            return false;
-        } else if (isPasswordInvalid(dto)) {
-            return false;
-        } else return isEmailValid(dto);
+    private final UsersRepository repository;
+    
+    boolean inspectRegistrationRequest(final User user) {
+        return isNameValid(user.name()) && isEmailValid(user.email()) && isPasswordValid(user.password());
     }
     
-    private boolean isEmailValid(final UserRequestDto dto) {
-        return dto.email() != null && !dto.email().isEmpty();
+    private boolean isNameValid(final String name) {
+        return name != null && !name.isEmpty() && !repository.existsByName(name);
     }
     
-    private boolean isPasswordInvalid(final UserRequestDto dto) {
-        return dto.password() == null || dto.password().isEmpty();
+    private boolean isEmailValid(final String email) {
+        return email != null && !email.isEmpty() && !repository.existsByEmail(email);
     }
     
-    private boolean isNameInvalid(final UserRequestDto dto) {
-        return dto.name() == null || dto.name().isEmpty();
+    private boolean isPasswordValid(final String password) {
+        return password != null && !password.isEmpty();
     }
 }
-
-//todo implement database search for duplicates

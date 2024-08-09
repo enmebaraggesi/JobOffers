@@ -4,7 +4,7 @@ class UsersManagementFacadeTestConfig {
     
     static UsersManagementFacade createForTest() {
         UsersRepository repository = new UsersRepositoryTestImpl();
-        UserInspector inspector = new UserInspector();
+        UserInspector inspector = new UserInspector(repository);
         return new UsersManagementFacade(repository, inspector);
     }
 }

@@ -2,6 +2,7 @@ package com.joboffers.domain.usersmanagement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -42,5 +43,19 @@ class UsersRepositoryTestImpl implements UsersRepository {
                          .build();
         inMemoryDatabase.put(id, saved);
         return saved;
+    }
+    
+    @Override
+    public boolean existsByEmail(final String email) {
+        return inMemoryDatabase.values()
+                               .stream()
+                               .anyMatch(user -> Objects.equals(user.email(), email));
+    }
+    
+    @Override
+    public boolean existsByName(final String name) {
+        return inMemoryDatabase.values()
+                               .stream()
+                               .anyMatch(user -> Objects.equals(user.name(), name));
     }
 }

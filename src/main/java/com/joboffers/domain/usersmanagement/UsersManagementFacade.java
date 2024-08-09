@@ -34,11 +34,11 @@ public class UsersManagementFacade {
     }
     
     UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {
-        if (inspector.inspectRegistrationRequest(requestDto)) {
-            User user = UserMapper.mapUserRequestDtoToUser(requestDto);
+        User user = UserMapper.mapUserRequestDtoToUser(requestDto);
+        if (inspector.inspectRegistrationRequest(user)) {
             User saved = repository.save(user);
             return new UserRegistrationResponseDto(saved.id(), saved.name(), true);
         }
-        return new UserRegistrationResponseDto(null, requestDto.name(), false);
+        return new UserRegistrationResponseDto(null, user.name(), false);
     }
 }
