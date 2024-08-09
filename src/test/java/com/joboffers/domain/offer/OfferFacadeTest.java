@@ -13,8 +13,6 @@ import static org.assertj.core.api.Assertions.catchException;
 
 class OfferFacadeTest {
     
-    // todo create message enum
-    
     @Test
     void should_find_no_offer_when_there_are_no_offers() {
         //given
@@ -35,7 +33,7 @@ class OfferFacadeTest {
         Exception caught = catchException(() -> facade.findOfferById(id));
         //then
         assertThat(caught).isInstanceOf(OfferNotFoundException.class);
-        assertThat(caught.getMessage()).isEqualTo("No offer found with id " + id);
+        assertThat(caught.getMessage()).isEqualTo("Offer not found");
     }
     
     @Test
@@ -52,14 +50,13 @@ class OfferFacadeTest {
         //when
         OfferResponseDto response = facade.saveOffer(requestDto);
         //then
-        OfferResponseDto expected = OfferResponseDto.builder()
-                                                    .id(1L)
-                                                    .position("testPosition")
-                                                    .company("testCompany")
-                                                    .salary("0")
-                                                    .url("https://example.com")
-                                                    .build();
-        assertThat(response).isEqualTo(expected);
+        assertThat(response).isEqualTo(OfferResponseDto.builder()
+                                                       .id(1L)
+                                                       .position("testPosition")
+                                                       .company("testCompany")
+                                                       .salary("0")
+                                                       .url("https://example.com")
+                                                       .build());
     }
     
     @Test
@@ -83,22 +80,20 @@ class OfferFacadeTest {
         OfferResponseDto response1 = facade.saveOffer(requestDto1);
         OfferResponseDto response2 = facade.saveOffer(requestDto2);
         //then
-        OfferResponseDto expected1 = OfferResponseDto.builder()
-                                                     .id(1L)
-                                                     .position("testPosition1")
-                                                     .company("testCompany1")
-                                                     .salary("1")
-                                                     .url("https://example1.com")
-                                                     .build();
-        OfferResponseDto expected2 = OfferResponseDto.builder()
-                                                     .id(2L)
-                                                     .position("testPosition2")
-                                                     .company("testCompany2")
-                                                     .salary("2")
-                                                     .url("https://example2.com")
-                                                     .build();
-        assertThat(response1).isEqualTo(expected1);
-        assertThat(response2).isEqualTo(expected2);
+        assertThat(response1).isEqualTo(OfferResponseDto.builder()
+                                                        .id(1L)
+                                                        .position("testPosition1")
+                                                        .company("testCompany1")
+                                                        .salary("1")
+                                                        .url("https://example1.com")
+                                                        .build());
+        assertThat(response2).isEqualTo(OfferResponseDto.builder()
+                                                        .id(2L)
+                                                        .position("testPosition2")
+                                                        .company("testCompany2")
+                                                        .salary("2")
+                                                        .url("https://example2.com")
+                                                        .build());
     }
     
     @Test
@@ -123,7 +118,7 @@ class OfferFacadeTest {
         Exception caught = catchException(() -> facade.saveOffer(requestDto2));
         //then
         assertThat(caught).isInstanceOf(DuplicateOfferUrlException.class);
-        assertThat(caught.getMessage()).isEqualTo("There is already offer with url " + url);
+        assertThat(caught.getMessage()).isEqualTo("There is already an offer with such url");
     }
     
     @Test
@@ -147,23 +142,22 @@ class OfferFacadeTest {
         //when
         List<OfferResponseDto> response = facade.findAllOffers();
         //then
-        OfferResponseDto expected1 = OfferResponseDto.builder()
-                                                     .id(1L)
-                                                     .position("testPosition1")
-                                                     .company("testCompany1")
-                                                     .salary("1")
-                                                     .url("https://example1.com")
-                                                     .build();
-        OfferResponseDto expected2 = OfferResponseDto.builder()
-                                                     .id(2L)
-                                                     .position("testPosition2")
-                                                     .company("testCompany2")
-                                                     .salary("2")
-                                                     .url("https://example2.com")
-                                                     .build();
-        assertThat(response).isNotEmpty();
-        assertThat(response).hasSize(2);
-        assertThat(response).contains(expected1, expected2);
+        assertThat(response).isNotEmpty()
+                            .hasSize(2)
+                            .contains(OfferResponseDto.builder()
+                                                      .id(1L)
+                                                      .position("testPosition1")
+                                                      .company("testCompany1")
+                                                      .salary("1")
+                                                      .url("https://example1.com")
+                                                      .build(),
+                                      OfferResponseDto.builder()
+                                                      .id(2L)
+                                                      .position("testPosition2")
+                                                      .company("testCompany2")
+                                                      .salary("2")
+                                                      .url("https://example2.com")
+                                                      .build());
     }
     
     @Test
@@ -182,14 +176,13 @@ class OfferFacadeTest {
         //when
         OfferResponseDto response = facade.findOfferById(id);
         //then
-        OfferResponseDto expected = OfferResponseDto.builder()
-                                                    .id(1L)
-                                                    .position("testPosition")
-                                                    .company("testCompany")
-                                                    .salary("0")
-                                                    .url("https://example.com")
-                                                    .build();
-        assertThat(response).isEqualTo(expected);
+        assertThat(response).isEqualTo(OfferResponseDto.builder()
+                                                       .id(1L)
+                                                       .position("testPosition")
+                                                       .company("testCompany")
+                                                       .salary("0")
+                                                       .url("https://example.com")
+                                                       .build());
     }
     
     @Test
@@ -205,9 +198,11 @@ class OfferFacadeTest {
         List<OfferResponseDto> response = facade.findAllOffers();
         //then
         assertThat(response).hasSize(3);
-        assertThat(response.get(0).url()).containsAnyOf(firstOfferUrl, secondOfferUrl, thirdOfferUrl);
-        assertThat(response.get(1).url()).containsAnyOf(firstOfferUrl, secondOfferUrl, thirdOfferUrl);
-        assertThat(response.get(2).url()).containsAnyOf(firstOfferUrl, secondOfferUrl, thirdOfferUrl);
+        assertThat(List.of(response.get(0).url(),
+                           response.get(1).url(),
+                           response.get(2).url())).containsAll(List.of(firstOfferUrl,
+                                                                       secondOfferUrl,
+                                                                       thirdOfferUrl));
     }
     
     @Test
@@ -229,5 +224,3 @@ class OfferFacadeTest {
         assertThat(response).hasSize(3);
     }
 }
-
-//todo combine assertions

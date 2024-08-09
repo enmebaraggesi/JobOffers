@@ -33,7 +33,7 @@ class UsersManagementFacadeTest {
         Exception caught = catchException(() -> facade.findUserById(id));
         //then
         assertThat(caught).isInstanceOf(UserNotFoundException.class);
-        assertThat(caught.getMessage()).isEqualTo("No user found with id " + id);
+        assertThat(caught.getMessage()).isEqualTo("User not found");
     }
     
     @Test
@@ -46,7 +46,7 @@ class UsersManagementFacadeTest {
         Exception caught = catchException(() -> facade.findUserByName(name));
         //then
         assertThat(caught).isInstanceOf(UserNotFoundException.class);
-        assertThat(caught.getMessage()).isEqualTo("No user found with name " + name);
+        assertThat(caught.getMessage()).isEqualTo("User not found");
     }
     
     @Test
@@ -115,13 +115,12 @@ class UsersManagementFacadeTest {
         //when
         UserResponseDto response = facade.findUserById(id);
         //then
-        UserResponseDto expected = UserResponseDto.builder()
-                                                  .id(id)
-                                                  .name("user1")
-                                                  .email("user1@email.com")
-                                                  .build();
-        assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
+        assertThat(response).isNotNull()
+                            .isEqualTo(UserResponseDto.builder()
+                                                      .id(id)
+                                                      .name("user1")
+                                                      .email("user1@email.com")
+                                                      .build());
     }
     
     @Test
@@ -139,33 +138,32 @@ class UsersManagementFacadeTest {
         //when
         UserResponseDto response = facade.findUserByName(name);
         //then
-        UserResponseDto expected = UserResponseDto.builder()
-                                                  .id(1L)
-                                                  .name(name)
-                                                  .email("user1@email.com")
-                                                  .build();
-        assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
+        assertThat(response).isNotNull()
+                            .isEqualTo(UserResponseDto.builder()
+                                                      .id(1L)
+                                                      .name(name)
+                                                      .email("user1@email.com")
+                                                      .build());
     }
     
     @Test
     void should_not_register_user_while_given_name_email_or_password_is_null() {
         //given
         UserRequestDto nullNameRequest = UserRequestDto.builder()
-                                                  .name(null)
-                                                  .email("user1@email.com")
-                                                  .password("password1")
-                                                  .build();
+                                                       .name(null)
+                                                       .email("user1@email.com")
+                                                       .password("password1")
+                                                       .build();
         UserRequestDto nullEmailRequest = UserRequestDto.builder()
-                                                  .name("user1")
-                                                  .email(null)
-                                                  .password("password1")
-                                                  .build();
+                                                        .name("user1")
+                                                        .email(null)
+                                                        .password("password1")
+                                                        .build();
         UserRequestDto nullPasswordRequest = UserRequestDto.builder()
-                                                  .name("user1")
-                                                  .email("user1@email.com")
-                                                  .password(null)
-                                                  .build();
+                                                           .name("user1")
+                                                           .email("user1@email.com")
+                                                           .password(null)
+                                                           .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         //when
         UserRegistrationResponseDto nullNameResponse = facade.saveUser(nullNameRequest);
@@ -184,20 +182,20 @@ class UsersManagementFacadeTest {
     void should_not_register_user_while_given_name_email_or_password_is_empty() {
         //given
         UserRequestDto emptyNameRequest = UserRequestDto.builder()
-                                                  .name("")
-                                                  .email("user1@email.com")
-                                                  .password("password1")
-                                                  .build();
+                                                        .name("")
+                                                        .email("user1@email.com")
+                                                        .password("password1")
+                                                        .build();
         UserRequestDto emptyEmailRequest = UserRequestDto.builder()
-                                                  .name("user1")
-                                                  .email("")
-                                                  .password("password1")
-                                                  .build();
+                                                         .name("user1")
+                                                         .email("")
+                                                         .password("password1")
+                                                         .build();
         UserRequestDto emptyPasswordRequest = UserRequestDto.builder()
-                                                  .name("user1")
-                                                  .email("user1@email.com")
-                                                  .password("")
-                                                  .build();
+                                                            .name("user1")
+                                                            .email("user1@email.com")
+                                                            .password("")
+                                                            .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         //when
         UserRegistrationResponseDto emptyNameResponse = facade.saveUser(emptyNameRequest);

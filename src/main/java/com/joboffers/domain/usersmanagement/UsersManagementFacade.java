@@ -8,10 +8,10 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+import static com.joboffers.domain.usersmanagement.ResponseMessage.USER_NOT_FOUND;
+
 @AllArgsConstructor
 public class UsersManagementFacade {
-    
-    // todo message enum
     
     private final UsersRepository repository;
     private final UserInspector inspector;
@@ -24,13 +24,13 @@ public class UsersManagementFacade {
     UserResponseDto findUserByName(final String name) {
         return repository.findByName(name)
                          .map(UserMapper::mapUserToUserResponseDto)
-                         .orElseThrow(() -> new UserNotFoundException("No user found with name " + name));
+                         .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
     }
     
     UserResponseDto findUserById(final Long id) {
         return repository.findById(id)
                          .map(UserMapper::mapUserToUserResponseDto)
-                         .orElseThrow(() -> new UserNotFoundException("No user found with id " + id));
+                         .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
     }
     
     UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {

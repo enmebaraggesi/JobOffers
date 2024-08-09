@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
+import static com.joboffers.domain.offer.ResponseMessage.DUPLICATE_URL;
+
 @AllArgsConstructor
 class OfferInspector {
     
@@ -16,7 +18,7 @@ class OfferInspector {
     void inspectUrl(final OfferRequestDto dto) {
         String url = dto.url();
         if (isDuplicateUrl(url)) {
-            throw new DuplicateOfferUrlException("There is already offer with url " + url);
+            throw new DuplicateOfferUrlException(DUPLICATE_URL.message);
         }
     }
     
