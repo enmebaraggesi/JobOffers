@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+import static com.joboffers.domain.offer.ResponseMessage.OFFER_NOT_FOUND;
+
 @AllArgsConstructor
 public class OfferFacade {
     
@@ -22,7 +24,7 @@ public class OfferFacade {
     OfferResponseDto findOfferById(final Long id) {
         return repository.findById(id)
                          .map(OfferMapper::mapOfferToOfferResponseDto)
-                         .orElseThrow(() -> new OfferNotFoundException("No offer found with id " + id));
+                         .orElseThrow(() -> new OfferNotFoundException(OFFER_NOT_FOUND.message));
     }
     
     OfferResponseDto saveOffer(final OfferRequestDto requestDto) {
