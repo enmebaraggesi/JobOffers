@@ -147,4 +147,68 @@ class UsersManagementFacadeTest {
         assertThat(response).isNotNull();
         assertThat(response).isEqualTo(expected);
     }
+    
+    @Test
+    void should_not_register_user_while_given_name_email_or_password_is_null() {
+        //given
+        UserRequestDto nullNameRequest = UserRequestDto.builder()
+                                                  .name(null)
+                                                  .email("user1@email.com")
+                                                  .password("password1")
+                                                  .build();
+        UserRequestDto nullEmailRequest = UserRequestDto.builder()
+                                                  .name("user1")
+                                                  .email(null)
+                                                  .password("password1")
+                                                  .build();
+        UserRequestDto nullPasswordRequest = UserRequestDto.builder()
+                                                  .name("user1")
+                                                  .email("user1@email.com")
+                                                  .password(null)
+                                                  .build();
+        UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
+        //when
+        UserRegistrationResponseDto nullNameResponse = facade.saveUser(nullNameRequest);
+        UserRegistrationResponseDto nullEmailResponse = facade.saveUser(nullEmailRequest);
+        UserRegistrationResponseDto nullPasswordResponse = facade.saveUser(nullPasswordRequest);
+        //then
+        assertThat(nullNameResponse.id()).isNull();
+        assertThat(nullNameResponse.created()).isFalse();
+        assertThat(nullEmailResponse.id()).isNull();
+        assertThat(nullEmailResponse.created()).isFalse();
+        assertThat(nullPasswordResponse.id()).isNull();
+        assertThat(nullPasswordResponse.created()).isFalse();
+    }
+    
+    @Test
+    void should_not_register_user_while_given_name_email_or_password_is_empty() {
+        //given
+        UserRequestDto emptyNameRequest = UserRequestDto.builder()
+                                                  .name("")
+                                                  .email("user1@email.com")
+                                                  .password("password1")
+                                                  .build();
+        UserRequestDto emptyEmailRequest = UserRequestDto.builder()
+                                                  .name("user1")
+                                                  .email("")
+                                                  .password("password1")
+                                                  .build();
+        UserRequestDto emptyPasswordRequest = UserRequestDto.builder()
+                                                  .name("user1")
+                                                  .email("user1@email.com")
+                                                  .password("")
+                                                  .build();
+        UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
+        //when
+        UserRegistrationResponseDto emptyNameResponse = facade.saveUser(emptyNameRequest);
+        UserRegistrationResponseDto emptyEmailResponse = facade.saveUser(emptyEmailRequest);
+        UserRegistrationResponseDto emptyPasswordResponse = facade.saveUser(emptyPasswordRequest);
+        //then
+        assertThat(emptyNameResponse.id()).isNull();
+        assertThat(emptyNameResponse.created()).isFalse();
+        assertThat(emptyEmailResponse.id()).isNull();
+        assertThat(emptyEmailResponse.created()).isFalse();
+        assertThat(emptyPasswordResponse.id()).isNull();
+        assertThat(emptyPasswordResponse.created()).isFalse();
+    }
 }
