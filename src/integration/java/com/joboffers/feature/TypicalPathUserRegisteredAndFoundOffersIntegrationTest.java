@@ -3,10 +3,10 @@ package com.joboffers.feature;
 import com.joboffers.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-class UserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest {
+class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest {
     
     @Test
-    void should_user_register_and_find_offers() {
+    void user_have_to_register_to_find_offers_and_external_source_should_have_some_offers() {
 //    1. There are no offers to fetch from external source
 //    2. Scheduler runs 1st time making GET request to external source adding 0 offers to database
 //    3. User tries to obtain JWT token making POST request to /token, but system returns UNAUTHORIZED(401)
