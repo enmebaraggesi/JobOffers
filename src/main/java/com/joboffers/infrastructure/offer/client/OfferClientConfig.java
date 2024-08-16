@@ -17,10 +17,12 @@ public class OfferClientConfig {
     }
     
     @Bean
-    public RestTemplate restTemplate(RestTemplateResponseErrorHandler restTemplateResponseErrorHandler) {
+    public RestTemplate restTemplate(RestTemplateResponseErrorHandler restTemplateResponseErrorHandler,
+                                     @Value("${job-offers.offer.http.client.connect-timeout}") int connectTimeout,
+                                     @Value("${job-offers.offer.http.client.read-timeout}") int readTimeout) {
         return new RestTemplateBuilder().errorHandler(restTemplateResponseErrorHandler)
-                                        .setConnectTimeout(Duration.ofMillis(1000))
-                                        .setReadTimeout(Duration.ofMillis(1000))
+                                        .setConnectTimeout(Duration.ofMillis(connectTimeout))
+                                        .setReadTimeout(Duration.ofMillis(readTimeout))
                                         .build();
     }
     

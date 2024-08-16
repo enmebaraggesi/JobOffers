@@ -2,6 +2,7 @@ package com.joboffers.feature;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.joboffers.BaseIntegrationTest;
+import com.joboffers.SampleJobOffersTestResponse;
 import com.joboffers.domain.offer.ExternalFetchable;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest {
+class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOffersTestResponse {
     
     @Autowired
     ExternalFetchable externalFetchable;
@@ -25,9 +26,7 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
                                        .willReturn(WireMock.aResponse()
                                                            .withStatus(HttpStatus.OK.value())
                                                            .withHeader("Content-Type", "application/json")
-                                                           .withBody("""
-                                                                     []
-                                                                     """)));
+                                                           .withBody(zeroOffersResponseJson())));
         //when
         List<OfferRequestDto> offerRequestDtos = externalFetchable.fetchNewOffers();
         //then
