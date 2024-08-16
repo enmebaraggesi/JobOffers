@@ -15,10 +15,10 @@ class OfferExternalMapper {
     
     private static OfferRequestDto mapOfferExternalResponseDtoToOfferRequestDto(OfferExternalResponseDto dto) {
         return OfferRequestDto.builder()
-                              .position(dto.position())
+                              .position(dto.title())
                               .company(dto.company())
                               .salary(dto.salary())
-                              .url(dto.url())
+                              .url(dto.offerUrl())
                               .build();
     }
 }

@@ -1,8 +1,11 @@
 package com.joboffers.infrastructure.offer.client.dto;
 
-public record OfferExternalResponseDto(String position,
+import lombok.Builder;
+
+@Builder
+public record OfferExternalResponseDto(String title,
                                        String company,
                                        String salary,
-                                       String url) {
+                                       String offerUrl) {
     
 }

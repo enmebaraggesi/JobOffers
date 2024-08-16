@@ -1,13 +1,37 @@
 package com.joboffers.feature;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.joboffers.BaseIntegrationTest;
+import com.joboffers.domain.offer.ExternalFetchable;
+import com.joboffers.domain.offer.dto.OfferRequestDto;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest {
+    
+    @Autowired
+    ExternalFetchable externalFetchable;
     
     @Test
     void user_have_to_register_to_find_offers_and_external_source_should_have_some_offers() {
 //    1. There are no offers to fetch from external source
+        //given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                                       .willReturn(WireMock.aResponse()
+                                                           .withStatus(HttpStatus.OK.value())
+                                                           .withHeader("Content-Type", "application/json")
+                                                           .withBody("""
+                                                                     []
+                                                                     """)));
+        //when
+        List<OfferRequestDto> offerRequestDtos = externalFetchable.fetchNewOffers();
+        //then
+        assertThat(offerRequestDtos).isEmpty();
 //    2. Scheduler runs 1st time making GET request to external source adding 0 offers to database
 //    3. User tries to obtain JWT token making POST request to /token, but system returns UNAUTHORIZED(401)
 //    4. User tries to find offers with no JWT token making GET request to /offers, but system returns UNAUTHORIZED(401)

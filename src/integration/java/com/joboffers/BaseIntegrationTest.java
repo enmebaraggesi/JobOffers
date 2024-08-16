@@ -22,7 +22,7 @@ import org.testcontainers.utility.DockerImageName;
 @AutoConfigureMockMvc
 public class BaseIntegrationTest {
     
-    public static final String WIRE_MOCK_HOST = "localhost";
+    public static final String WIRE_MOCK_HOST = "http://localhost";
     
     @Autowired
     public MockMvc mockMvc;
@@ -41,7 +41,7 @@ public class BaseIntegrationTest {
     @DynamicPropertySource
     public static void mongoProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.host", MONGO_DB_CONTAINER::getHost);
-        registry.add("offer.http.client.config.uri", () -> WIRE_MOCK_HOST);
-        registry.add("offer.http.client.config.port", () -> wireMockServer.getPort());
+        registry.add("job-offers.offer.http.client.url", () -> WIRE_MOCK_HOST);
+        registry.add("job-offers.offer.http.client.port", () -> wireMockServer.getPort());
     }
 }
