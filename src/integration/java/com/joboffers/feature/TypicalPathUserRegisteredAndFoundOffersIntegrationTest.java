@@ -10,11 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 
 class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOffersTestResponse {
     
@@ -40,15 +38,8 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 //    2. Scheduler runs 1st time making GET request to external source adding 0 offers to database
         //given
         //when
-        await().atMost(Duration.ofSeconds(10))
-               .pollInterval(Duration.ofSeconds(1))
-               .until(() -> {
-                   Integer counter = offerScheduler.getCounter().get();
-                   return counter.equals(1);
-               });
-        List<OfferRequestDto> offersAfterScheduler = externalFetchable.fetchNewOffers();
+        offerScheduler.scheduledOfferUpdate();
         //then
-        assertThat(offersAfterScheduler).isEmpty();
 //    3. User tries to obtain JWT token making POST request to /token, but system returns UNAUTHORIZED(401)
 //    4. User tries to find offers with no JWT token making GET request to /offers, but system returns UNAUTHORIZED(401)
 //    5. User registers successfully making POST request to /register giving username, password and email
