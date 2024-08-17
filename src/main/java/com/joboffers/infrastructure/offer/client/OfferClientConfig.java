@@ -1,6 +1,5 @@
 package com.joboffers.infrastructure.offer.client;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,19 +16,16 @@ public class OfferClientConfig {
     }
     
     @Bean
-    public RestTemplate restTemplate(RestTemplateResponseErrorHandler restTemplateResponseErrorHandler,
-                                     @Value("${job-offers.offer.http.client.connect-timeout}") int connectTimeout,
-                                     @Value("${job-offers.offer.http.client.read-timeout}") int readTimeout) {
-        return new RestTemplateBuilder().errorHandler(restTemplateResponseErrorHandler)
-                                        .setConnectTimeout(Duration.ofMillis(connectTimeout))
-                                        .setReadTimeout(Duration.ofMillis(readTimeout))
+    public RestTemplate restTemplate(RestTemplateResponseErrorHandler errorHandler,
+                                     OfferClientProperties properties) {
+        return new RestTemplateBuilder().errorHandler(errorHandler)
+                                        .setConnectTimeout(Duration.ofMillis(properties.connectionTimeout()))
+                                        .setReadTimeout(Duration.ofMillis(properties.readTimeout()))
                                         .build();
     }
     
     @Bean
-    public OfferClient offerClient(RestTemplate restTemplate,
-                                   @Value("${job-offers.offer.http.client.url}") String url,
-                                   @Value("${job-offers.offer.http.client.port}") int port) {
-        return new OfferClient(restTemplate, url, port);
+    public OfferClient offerClient(RestTemplate restTemplate, OfferClientProperties properties) {
+        return new OfferClient(restTemplate, properties);
     }
 }

@@ -23,13 +23,12 @@ import java.util.List;
 public class OfferClient implements ExternalFetchable {
     
     private final RestTemplate restTemplate;
-    private final String baseUrl;
-    private final int port;
+    private final OfferClientProperties properties;
     
     @Override
     public List<OfferRequestDto> fetchNewOffers() {
         log.info("Fetching new offers...");
-        String uri = UriComponentsBuilder.fromHttpUrl(setupRequestUri("/offers"))
+        String uri = UriComponentsBuilder.fromHttpUrl(setupRequestUrl())
                                          .toUriString();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -53,7 +52,7 @@ public class OfferClient implements ExternalFetchable {
         }
     }
     
-    private String setupRequestUri(final String service) {
-        return baseUrl + ":" + port + service;
+    private String setupRequestUrl() {
+        return properties.url() + ":" + properties.port() + properties.service();
     }
 }
