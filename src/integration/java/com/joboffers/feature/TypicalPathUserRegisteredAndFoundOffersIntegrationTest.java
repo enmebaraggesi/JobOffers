@@ -5,18 +5,24 @@ import com.joboffers.BaseIntegrationTest;
 import com.joboffers.SampleJobOffersTestResponse;
 import com.joboffers.domain.offer.ExternalFetchable;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
+import com.joboffers.infrastructure.offer.scheduler.OfferScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOffersTestResponse {
     
     @Autowired
     ExternalFetchable externalFetchable;
+    
+    @Autowired
+    OfferScheduler offerScheduler;
     
     @Test
     void user_have_to_register_to_find_offers_and_external_source_should_have_some_offers() {
@@ -28,10 +34,21 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
                                                            .withHeader("Content-Type", "application/json")
                                                            .withBody(zeroOffersResponseJson())));
         //when
-        List<OfferRequestDto> offerRequestDtos = externalFetchable.fetchNewOffers();
+        List<OfferRequestDto> availableExternalOffers = externalFetchable.fetchNewOffers();
         //then
-        assertThat(offerRequestDtos).isEmpty();
+        assertThat(availableExternalOffers).isEmpty();
 //    2. Scheduler runs 1st time making GET request to external source adding 0 offers to database
+        //given
+        //when
+        await().atMost(Duration.ofSeconds(10))
+               .pollInterval(Duration.ofSeconds(1))
+               .until(() -> {
+                   Integer counter = offerScheduler.getCounter().get();
+                   return counter.equals(1);
+               });
+        List<OfferRequestDto> offersAfterScheduler = externalFetchable.fetchNewOffers();
+        //then
+        assertThat(offersAfterScheduler).isEmpty();
 //    3. User tries to obtain JWT token making POST request to /token, but system returns UNAUTHORIZED(401)
 //    4. User tries to find offers with no JWT token making GET request to /offers, but system returns UNAUTHORIZED(401)
 //    5. User registers successfully making POST request to /register giving username, password and email
