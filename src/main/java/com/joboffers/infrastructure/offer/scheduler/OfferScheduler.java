@@ -2,7 +2,6 @@ package com.joboffers.infrastructure.offer.scheduler;
 
 import com.joboffers.domain.offer.OfferFacade;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import java.util.Date;
 
 @Component
 @Log4j2
-@Getter
 @AllArgsConstructor
 public class OfferScheduler {
     
@@ -25,6 +23,7 @@ public class OfferScheduler {
     @Scheduled(fixedDelayString = "${job-offers.offer.scheduler.offer-update-occurrence}")
     public void scheduledOfferUpdate() {
         log.info(STARTED_FETCHING_MESSAGE, DATE_FORMAT.format(new Date()));
+        offerFacade.fetchNewOffers();
         int size = offerFacade.findAllOffers().size();
         log.info(NEW_OFFERS_ADDED_MESSAGE, size);
         log.info(FINISHED_FETCHING_MESSAGE, DATE_FORMAT.format(new Date()));

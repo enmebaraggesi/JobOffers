@@ -1,12 +1,10 @@
 package com.joboffers.domain.offer;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
+@Repository
 interface OffersRepository extends MongoRepository<Offer, String> {
     
-    Optional<Offer> findById(Long id);
-    
-    Optional<Offer> findByUrl(String url);
+    boolean existsByUrl(String url);
 }

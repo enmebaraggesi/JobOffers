@@ -1,7 +1,6 @@
 package com.joboffers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,8 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 @SpringBootTest(classes = JobOffersApplication.class)
 @ActiveProfiles("integration")
@@ -35,12 +36,12 @@ public class BaseIntegrationTest {
     
     @RegisterExtension
     public static WireMockExtension wireMockServer = WireMockExtension.newInstance()
-                                                                      .options(WireMockConfiguration.wireMockConfig().dynamicPort())
+                                                                      .options(wireMockConfig().dynamicPort())
                                                                       .build();
     
     @DynamicPropertySource
     public static void mongoProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.host", MONGO_DB_CONTAINER::getHost);
+        registry.add("spring.data.mongodb.uri", MONGO_DB_CONTAINER::getReplicaSetUrl);
         registry.add("job-offers.offer.http.client.url", () -> WIRE_MOCK_HOST);
         registry.add("job-offers.offer.http.client.port", () -> wireMockServer.getPort());
     }

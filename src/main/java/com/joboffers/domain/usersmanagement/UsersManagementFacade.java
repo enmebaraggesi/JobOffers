@@ -27,7 +27,7 @@ public class UsersManagementFacade {
                          .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
     }
     
-    UserResponseDto findUserById(final Long id) {
+    UserResponseDto findUserById(final String id) {
         return repository.findById(id)
                          .map(UserMapper::mapUserToUserResponseDto)
                          .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));

@@ -10,14 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 class UsersRepositoryTestImpl implements UsersRepository {
     
-    private final Map<Long, User> inMemoryDatabase = new ConcurrentHashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private final Map<String, User> inMemoryDatabase = new ConcurrentHashMap<>();
     
     @Override
     public Optional<User> findByName(final String name) {
@@ -28,21 +27,21 @@ class UsersRepositoryTestImpl implements UsersRepository {
     }
     
     @Override
-    public Optional<User> findById(final Long id) {
+    public Optional<User> findById(final String id) {
         return Optional.ofNullable(inMemoryDatabase.get(id));
     }
     
     @Override
-    public User save(final User user) {
-        long id = idCounter.getAndIncrement();
+    public <S extends User> S save(final S entity) {
+        String id = UUID.randomUUID().toString();
         User saved = User.builder()
                          .id(id)
-                         .name(user.name())
-                         .email(user.email())
-                         .password(user.password())
+                         .name(entity.name())
+                         .email(entity.email())
+                         .password(entity.password())
                          .build();
         inMemoryDatabase.put(id, saved);
-        return saved;
+        return (S) saved;
     }
     
     @Override
@@ -62,11 +61,6 @@ class UsersRepositoryTestImpl implements UsersRepository {
     @Override
     public <S extends User> List<S> saveAll(final Iterable<S> entities) {
         return List.of();
-    }
-    
-    @Override
-    public Optional<User> findById(final String s) {
-        return Optional.empty();
     }
     
     @Override

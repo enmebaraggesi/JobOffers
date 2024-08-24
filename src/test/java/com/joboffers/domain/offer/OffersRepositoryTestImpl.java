@@ -1,6 +1,5 @@
 package com.joboffers.domain.offer;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,36 +9,38 @@ import org.springframework.data.repository.query.FluentQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 class OffersRepositoryTestImpl implements OffersRepository {
     
-    private final Map<Long, Offer> inMemoryDatabase = new ConcurrentHashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private final Map<String, Offer> inMemoryDatabase = new ConcurrentHashMap<>();
     
     @Override
-    public Offer save(final @NotNull Offer offer) {
-        long id = idCounter.getAndIncrement();
-        Offer toSave = Offer.builder()
-                            .id(id)
-                            .position(offer.position())
-                            .company(offer.company())
-                            .salary(offer.salary())
-                            .url(offer.url())
-                            .build();
-        inMemoryDatabase.put(id, toSave);
-        return toSave;
+    public boolean existsByUrl(final String url) {
+        return inMemoryDatabase.values()
+                               .stream()
+                               .anyMatch(offer -> offer.url().equals(url));
     }
     
     @Override
-    public Optional<Offer> findByUrl(final String url) {
-        return inMemoryDatabase.values()
-                               .stream()
-                               .filter(offer -> offer.url()
-                                                     .equals(url))
-                               .findFirst();
+    public <S extends Offer> S save(final S entity) {
+        String id = UUID.randomUUID().toString();
+        Offer toSave = Offer.builder()
+                            .id(id)
+                            .position(entity.position())
+                            .company(entity.company())
+                            .salary(entity.salary())
+                            .url(entity.url())
+                            .build();
+        inMemoryDatabase.put(id, toSave);
+        return (S) toSave;
+    }
+    
+    @Override
+    public <S extends Offer> List<S> saveAll(final Iterable<S> entities) {
+        return List.of();
     }
     
     @Override
@@ -50,22 +51,12 @@ class OffersRepositoryTestImpl implements OffersRepository {
     }
     
     @Override
-    public <S extends Offer> List<S> saveAll(final Iterable<S> entities) {
-        return List.of();
+    public Optional<Offer> findById(final String id) {
+        return Optional.ofNullable(inMemoryDatabase.get(id));
     }
     
     @Override
-    public Optional<Offer> findById(final String s) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public boolean existsById(final String s) {
-        return false;
-    }
-    
-    @Override
-    public List<Offer> findAllById(final Iterable<String> strings) {
+    public List<Offer> findAllById(final Iterable<String> longs) {
         return List.of();
     }
     
@@ -75,7 +66,7 @@ class OffersRepositoryTestImpl implements OffersRepository {
     }
     
     @Override
-    public void deleteById(final String s) {
+    public void deleteById(final String string) {
     
     }
     
@@ -100,8 +91,8 @@ class OffersRepositoryTestImpl implements OffersRepository {
     }
     
     @Override
-    public Optional<Offer> findById(final Long id) {
-        return Optional.ofNullable(inMemoryDatabase.get(id));
+    public boolean existsById(final String string) {
+        return false;
     }
     
     @Override

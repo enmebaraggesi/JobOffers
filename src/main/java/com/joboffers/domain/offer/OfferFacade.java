@@ -21,7 +21,14 @@ public class OfferFacade {
         return OfferMapper.mapOfferListToOfferResponseDtoList(offers);
     }
     
-    OfferResponseDto findOfferById(final Long id) {
+    public void fetchNewOffers() {
+        List<OfferRequestDto> fetchedOffers = offerFetcher.fetchNewOffers();
+        List<OfferResponseDto> allOffers = this.findAllOffers();
+        List<OfferRequestDto> filteredRequests = offerInspector.filterOutExistingOffers(fetchedOffers, allOffers);
+        filteredRequests.forEach(this::saveOffer);
+    }
+    
+    OfferResponseDto findOfferById(final String id) {
         return repository.findById(id)
                          .map(OfferMapper::mapOfferToOfferResponseDto)
                          .orElseThrow(() -> new OfferNotFoundException(OFFER_NOT_FOUND.message));
@@ -32,12 +39,5 @@ public class OfferFacade {
         Offer offer = OfferMapper.mapOfferRequestDtoToOffer(requestDto);
         Offer saved = repository.save(offer);
         return OfferMapper.mapOfferToOfferResponseDto(saved);
-    }
-    
-    void fetchNewOffers() {
-        List<OfferRequestDto> fetchedOffers = offerFetcher.fetchNewOffers();
-        List<OfferResponseDto> allOffers = this.findAllOffers();
-        List<OfferRequestDto> filteredRequests = offerInspector.filterOutExistingOffers(fetchedOffers, allOffers);
-        filteredRequests.forEach(this::saveOffer);
     }
 }

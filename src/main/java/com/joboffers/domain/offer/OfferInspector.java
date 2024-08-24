@@ -1,12 +1,11 @@
 package com.joboffers.domain.offer;
 
-import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
+import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.joboffers.domain.offer.ResponseMessage.DUPLICATE_URL;
 
@@ -23,8 +22,7 @@ class OfferInspector {
     }
     
     private boolean isDuplicateUrl(String url) {
-        Optional<Offer> foundByUrl = repository.findByUrl(url);
-        return foundByUrl.isPresent();
+        return repository.existsByUrl(url);
     }
     
     List<OfferRequestDto> filterOutExistingOffers(final List<OfferRequestDto> fetched, final List<OfferResponseDto> existing) {

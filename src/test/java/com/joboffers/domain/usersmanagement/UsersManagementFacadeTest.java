@@ -26,7 +26,7 @@ class UsersManagementFacadeTest {
     @Test
     void should_throw_exception_when_there_is_no_user_with_such_id() {
         //given
-        Long id = 1L;
+        String id = "abc";
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         assertThat(facade.findAllUsers()).isEmpty();
         //when
@@ -64,7 +64,6 @@ class UsersManagementFacadeTest {
         //then
         assertThat(response).isNotNull();
         assertThat(response.created()).isTrue();
-        assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("user1");
     }
     
@@ -89,12 +88,12 @@ class UsersManagementFacadeTest {
         //then
         assertThat(facade.findAllUsers()).hasSize(2);
         assertThat(response1).isEqualTo(UserRegistrationResponseDto.builder()
-                                                                   .id(1L)
+                                                                   .id(response1.id())
                                                                    .name("user1")
                                                                    .created(true)
                                                                    .build());
         assertThat(response2).isEqualTo(UserRegistrationResponseDto.builder()
-                                                                   .id(2L)
+                                                                   .id(response2.id())
                                                                    .name("user2")
                                                                    .created(true)
                                                                    .build());
@@ -103,21 +102,20 @@ class UsersManagementFacadeTest {
     @Test
     void should_find_user_by_id() {
         //given
-        Long id = 1L;
         UserRequestDto requestDto = UserRequestDto.builder()
                                                   .name("user1")
                                                   .email("user1@email.com")
                                                   .password("password1")
                                                   .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
-        facade.saveUser(requestDto);
+        UserRegistrationResponseDto saved = facade.saveUser(requestDto);
         assertThat(facade.findAllUsers()).hasSize(1);
         //when
-        UserResponseDto response = facade.findUserById(id);
+        UserResponseDto response = facade.findUserById(saved.id());
         //then
         assertThat(response).isNotNull()
                             .isEqualTo(UserResponseDto.builder()
-                                                      .id(id)
+                                                      .id(saved.id())
                                                       .name("user1")
                                                       .email("user1@email.com")
                                                       .build());
@@ -133,14 +131,14 @@ class UsersManagementFacadeTest {
                                                   .password("password1")
                                                   .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
-        facade.saveUser(requestDto);
+        UserRegistrationResponseDto saved = facade.saveUser(requestDto);
         assertThat(facade.findAllUsers()).hasSize(1);
         //when
         UserResponseDto response = facade.findUserByName(name);
         //then
         assertThat(response).isNotNull()
                             .isEqualTo(UserResponseDto.builder()
-                                                      .id(1L)
+                                                      .id(saved.id())
                                                       .name(name)
                                                       .email("user1@email.com")
                                                       .build());
