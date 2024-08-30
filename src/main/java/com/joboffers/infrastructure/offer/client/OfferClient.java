@@ -44,7 +44,7 @@ public class OfferClient implements ExternalFetchable {
                 log.warn("Response body was null. Returning empty list.");
                 return Collections.emptyList();
             }
-            log.info("Successfully fetched offers: {}", externalOfferList);
+            log.info("Successfully fetched {} offers", externalOfferList.size());
             return OfferExternalMapper.mapOfferExternalResponseDtoListToOfferRequestDtoList(externalOfferList);
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers: {}", e.getMessage());

@@ -23,8 +23,7 @@ public class OfferScheduler {
     @Scheduled(fixedDelayString = "${job-offers.offer.scheduler.offer-update-occurrence}")
     public void scheduledOfferUpdate() {
         log.info(STARTED_FETCHING_MESSAGE, DATE_FORMAT.format(new Date()));
-        offerFacade.fetchNewOffers();
-        int size = offerFacade.findAllOffers().size();
+        int size = offerFacade.fetchNewOffers();
         log.info(NEW_OFFERS_ADDED_MESSAGE, size);
         log.info(FINISHED_FETCHING_MESSAGE, DATE_FORMAT.format(new Date()));
     }

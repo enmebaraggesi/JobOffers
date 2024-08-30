@@ -21,11 +21,12 @@ public class OfferFacade {
         return OfferMapper.mapOfferListToOfferResponseDtoList(offers);
     }
     
-    public void fetchNewOffers() {
+    public int fetchNewOffers() {
         List<OfferRequestDto> fetchedOffers = offerFetcher.fetchNewOffers();
         List<OfferResponseDto> allOffers = this.findAllOffers();
         List<OfferRequestDto> filteredRequests = offerInspector.filterOutExistingOffers(fetchedOffers, allOffers);
         filteredRequests.forEach(this::saveOffer);
+        return filteredRequests.size();
     }
     
     OfferResponseDto findOfferById(final String id) {
