@@ -29,10 +29,10 @@ public class OfferFacade {
         return filteredRequests.size();
     }
     
-    OfferResponseDto findOfferById(final String id) {
+    public OfferResponseDto findOfferById(final String id) {
         return repository.findById(id)
                          .map(OfferMapper::mapOfferToOfferResponseDto)
-                         .orElseThrow(() -> new OfferNotFoundException(OFFER_NOT_FOUND.message));
+                         .orElseThrow(() -> new OfferNotFoundException(OFFER_NOT_FOUND.format(id)));
     }
     
     OfferResponseDto saveOffer(final OfferRequestDto requestDto) {

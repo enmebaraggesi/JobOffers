@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOffersTestResponse {
@@ -65,13 +66,13 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
         //given
         MockHttpServletRequestBuilder getAllOffersRequest = get("/offers");
         //when
-        ResultActions performGetWithAuthorisation = mockMvc.perform(getAllOffersRequest);
+        ResultActions performGetAllOffers = mockMvc.perform(getAllOffersRequest);
         //then
-        MvcResult mvcResult = performGetWithAuthorisation.andExpect(status().isOk()).andReturn();
-        String json = mvcResult.getResponse().getContentAsString();
-        List<OfferResponseDto> responseDtos = objectMapper.readValue(json, new TypeReference<>() {
+        MvcResult getAllOffersResult = performGetAllOffers.andExpect(status().isOk()).andReturn();
+        String getAllOffersJson = getAllOffersResult.getResponse().getContentAsString();
+        List<OfferResponseDto> getAllOffersResponseDtos = objectMapper.readValue(getAllOffersJson, new TypeReference<>() {
         });
-        assertThat(responseDtos).isEmpty();
+        assertThat(getAllOffersResponseDtos).isEmpty();
 
 
 //    8. There are 2 new offers to fetch from external source
@@ -89,7 +90,22 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    9. Scheduler runs 2nd time making GET request to external source adding 2 offers to database
 //    10. User makes GET request to /offers with header “Authorization: Bearer {token}” and system returns OK(200) with 2 new offers
-//    11. User makes GET request to /offers/{id} with authorization header and non-existing ID and system returns NOT_FOUND(404) with message "Offer with ID {id} not found"
+//    11. User makes GET request to /offers/{id} with authorization header and nonExistingId and system returns NOT_FOUND(404) with message "Offer with ID {id} not found"
+        //given
+        String id = "nonExistingId";
+        MockHttpServletRequestBuilder getOfferByNonExistingId = get("/offers/" + id);
+        //when
+        ResultActions performGetOfferByNonExistingId = mockMvc.perform(getOfferByNonExistingId);
+        //then
+        performGetOfferByNonExistingId.andExpect(status().isNotFound())
+                .andExpect(content().json("""
+                                          {
+                                          "message": "Offer not found",
+                                          "status": "NOT_FOUND"
+                                          }
+                                          """.trim()));
+
+
 //    12. User makes GET request to /offers/{id} with authorization header and existing ID and system returns OK(200) with exact offer
 //    13. There are 2 new offers to fetch from external source
 //    14. Scheduler runs 3rd time making GET request to external source adding 2 offers to database
