@@ -13,6 +13,17 @@ public interface SampleJobOffersTestRequest {
                """.trim();
     }
     
+    default String offerWithExistingUrlRequestJson() {
+        return """
+               {
+               "position": "New position",
+               "company": "New company",
+               "salary": "9999 PLN",
+               "url": "https://joboffers.com"
+               }
+               """.trim();
+    }
+    
     default String offerWithEmptyPositionAndSalaryRequestJson() {
         return """
                {

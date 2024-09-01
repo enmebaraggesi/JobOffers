@@ -43,4 +43,23 @@ class ApiValidationErrorIntegrationTest extends BaseIntegrationTest implements S
         assertThat(responseDto.errors()).containsExactlyInAnyOrder("company must not be empty",
                                                                    "company must not be null");
     }
+    
+    @Test
+    public void should_return_bad_request_and_message_when_provided_offer_with_already_existing_url() throws Exception {
+        //given
+        mockMvc.perform(post("/offers")
+                                .content(offerRequestJson())
+                                .contentType(MediaType.APPLICATION_JSON)
+        );
+        //when
+        ResultActions perform = mockMvc.perform(post("/offers")
+                                                        .content(offerWithExistingUrlRequestJson())
+                                                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        //then
+        MvcResult mvcResult = perform.andExpect(status().isBadRequest()).andReturn();
+        String json = mvcResult.getResponse().getContentAsString();
+        ApiValidationResponseDto responseDto = objectMapper.readValue(json, ApiValidationResponseDto.class);
+        assertThat(responseDto.errors()).containsExactly("There is already an offer with URL: https://joboffers.com");
+    }
 }
