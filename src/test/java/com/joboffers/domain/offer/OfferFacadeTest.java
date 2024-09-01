@@ -33,7 +33,7 @@ class OfferFacadeTest {
         Exception caught = catchException(() -> facade.findOfferById(id));
         //then
         assertThat(caught).isInstanceOf(OfferNotFoundException.class);
-        assertThat(caught.getMessage()).isEqualTo("Offer not found");
+        assertThat(caught.getMessage()).isEqualTo("Offer with ID " + id + " not found");
     }
     
     @Test
@@ -118,7 +118,7 @@ class OfferFacadeTest {
         Exception caught = catchException(() -> facade.saveOffer(requestDto2));
         //then
         assertThat(caught).isInstanceOf(DuplicateOfferUrlException.class);
-        assertThat(caught.getMessage()).isEqualTo("There is already an offer with such url");
+        assertThat(caught.getMessage()).isEqualTo("There is already an offer with URL: " + url);
     }
     
     @Test
