@@ -100,7 +100,7 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
         performGetOfferByNonExistingId.andExpect(status().isNotFound())
                 .andExpect(content().json("""
                                           {
-                                          "message": "Offer not found",
+                                          "message": "Offer with ID nonExistingId not found",
                                           "status": "NOT_FOUND"
                                           }
                                           """.trim()));

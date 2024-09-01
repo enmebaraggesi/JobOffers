@@ -17,7 +17,7 @@ class OfferInspector {
     void inspectUrl(final OfferRequestDto dto) {
         String url = dto.url();
         if (isDuplicateUrl(url)) {
-            throw new DuplicateOfferUrlException(DUPLICATE_URL.message);
+            throw new DuplicateOfferUrlException(DUPLICATE_URL.format(url));
         }
     }
     
