@@ -116,7 +116,7 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
         //when
         ResultActions performPostOffer = mockMvc.perform(postOffer);
         //then
-        MvcResult postOfferResult = performPostOffer.andExpect(status().isOk()).andReturn();
+        MvcResult postOfferResult = performPostOffer.andExpect(status().isCreated()).andReturn();
         String postOfferJson = postOfferResult.getResponse().getContentAsString();
         OfferResponseDto postOfferResponseDto = objectMapper.readValue(postOfferJson, OfferResponseDto.class);
         assertAll(
