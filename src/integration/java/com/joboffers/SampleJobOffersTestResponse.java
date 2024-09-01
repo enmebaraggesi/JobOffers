@@ -24,4 +24,13 @@ public interface SampleJobOffersTestResponse {
                ]
                """.trim();
     }
+    
+    default String nonExistingOfferResponseJson() {
+        return """
+               {
+               "message": "Offer with ID nonExistingId not found",
+               "status": "NOT_FOUND"
+               }
+               """.trim();
+    }
 }

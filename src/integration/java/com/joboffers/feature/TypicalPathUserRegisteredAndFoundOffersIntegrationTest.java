@@ -3,6 +3,7 @@ package com.joboffers.feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.joboffers.BaseIntegrationTest;
+import com.joboffers.SampleJobOffersTestRequest;
 import com.joboffers.SampleJobOffersTestResponse;
 import com.joboffers.domain.offer.ExternalFetchable;
 import com.joboffers.domain.offer.OfferFacade;
@@ -12,6 +13,7 @@ import com.joboffers.infrastructure.offer.scheduler.OfferScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -19,11 +21,13 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOffersTestResponse {
+class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegrationTest implements SampleJobOffersTestResponse, SampleJobOffersTestRequest {
     
     @Autowired
     ExternalFetchable externalFetchable;
@@ -92,23 +96,48 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 //    10. User makes GET request to /offers with header “Authorization: Bearer {token}” and system returns OK(200) with 2 new offers
 //    11. User makes GET request to /offers/{id} with authorization header and nonExistingId and system returns NOT_FOUND(404) with message "Offer with ID {id} not found"
         //given
-        String id = "nonExistingId";
-        MockHttpServletRequestBuilder getOfferByNonExistingId = get("/offers/" + id);
+        String nonExistingId = "nonExistingId";
+        MockHttpServletRequestBuilder getOfferByNonExistingId = get("/offers/" + nonExistingId);
         //when
         ResultActions performGetOfferByNonExistingId = mockMvc.perform(getOfferByNonExistingId);
         //then
         performGetOfferByNonExistingId.andExpect(status().isNotFound())
-                .andExpect(content().json("""
-                                          {
-                                          "message": "Offer with ID nonExistingId not found",
-                                          "status": "NOT_FOUND"
-                                          }
-                                          """.trim()));
+                                      .andExpect(content().json(nonExistingOfferResponseJson()));
 
 
 //    12. User makes GET request to /offers/{id} with authorization header and existing ID and system returns OK(200) with exact offer
 //    13. There are 2 new offers to fetch from external source
 //    14. Scheduler runs 3rd time making GET request to external source adding 2 offers to database
 //    15. User makes GET request to /offers with authorization header and system returns OK(200) with 4 offers
+//    16. User makes POST request to /offers with authorization header and system returns OK(200) with posted offer
+        //given
+        MockHttpServletRequestBuilder postOffer = post("/offers").content(offerRequestJson())
+                                                                 .contentType(MediaType.APPLICATION_JSON);
+        //when
+        ResultActions performPostOffer = mockMvc.perform(postOffer);
+        //then
+        MvcResult postOfferResult = performPostOffer.andExpect(status().isOk()).andReturn();
+        String postOfferJson = postOfferResult.getResponse().getContentAsString();
+        OfferResponseDto postOfferResponseDto = objectMapper.readValue(postOfferJson, OfferResponseDto.class);
+        assertAll(
+                () -> assertThat(postOfferResponseDto.id()).isNotNull(),
+                () -> assertThat(postOfferResponseDto.position()).isEqualTo("Test position"),
+                () -> assertThat(postOfferResponseDto.company()).isEqualTo("Test company"),
+                () -> assertThat(postOfferResponseDto.salary()).isEqualTo("9999 USD"),
+                () -> assertThat(postOfferResponseDto.url()).isEqualTo("https://joboffers.com")
+        );
+
+
+//    17. User makes GET request to /offers/{id} with authorization header and posted offer and system returns OK(200) with offer
+        //given
+        String postedOfferId = postOfferResponseDto.id();
+        MockHttpServletRequestBuilder getOfferByPostedOfferId = get("/offers/" + postedOfferId);
+        //when
+        ResultActions performGetOfferByPostedOfferId = mockMvc.perform(getOfferByPostedOfferId);
+        //then
+        MvcResult getOfferByPostedOfferIdResult = performGetOfferByPostedOfferId.andExpect(status().isOk()).andReturn();
+        String getOfferByPostedOfferIdJson = getOfferByPostedOfferIdResult.getResponse().getContentAsString();
+        OfferResponseDto getOfferByPostedOfferIdResponseDto = objectMapper.readValue(getOfferByPostedOfferIdJson, OfferResponseDto.class);
+        assertThat(getOfferByPostedOfferIdResponseDto.id()).isEqualTo(postedOfferId);
     }
 }

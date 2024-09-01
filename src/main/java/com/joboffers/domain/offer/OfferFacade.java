@@ -35,7 +35,7 @@ public class OfferFacade {
                          .orElseThrow(() -> new OfferNotFoundException(OFFER_NOT_FOUND.format(id)));
     }
     
-    OfferResponseDto saveOffer(final OfferRequestDto requestDto) {
+    public OfferResponseDto saveOffer(final OfferRequestDto requestDto) {
         offerInspector.inspectUrl(requestDto);
         Offer offer = OfferMapper.mapOfferRequestDtoToOffer(requestDto);
         Offer saved = repository.save(offer);
