@@ -36,7 +36,6 @@ public class OfferFacade {
     }
     
     public OfferResponseDto saveOffer(final OfferRequestDto requestDto) {
-        offerInspector.inspectUrl(requestDto);
         Offer offer = OfferMapper.mapOfferRequestDtoToOffer(requestDto);
         Offer saved = repository.save(offer);
         return OfferMapper.mapOfferToOfferResponseDto(saved);

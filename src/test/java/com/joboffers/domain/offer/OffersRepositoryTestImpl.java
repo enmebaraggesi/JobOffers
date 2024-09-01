@@ -18,13 +18,6 @@ class OffersRepositoryTestImpl implements OffersRepository {
     private final Map<String, Offer> inMemoryDatabase = new ConcurrentHashMap<>();
     
     @Override
-    public boolean existsByUrl(final String url) {
-        return inMemoryDatabase.values()
-                               .stream()
-                               .anyMatch(offer -> offer.url().equals(url));
-    }
-    
-    @Override
     public <S extends Offer> S save(final S entity) {
         String id = UUID.randomUUID().toString();
         Offer toSave = Offer.builder()

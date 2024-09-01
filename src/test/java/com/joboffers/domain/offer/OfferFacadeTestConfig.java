@@ -10,14 +10,14 @@ class OfferFacadeTestConfig {
     static OfferFacade createForTest() {
         OffersRepository repository = new OffersRepositoryTestImpl();
         ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(Collections.emptyList());
-        OfferInspector offerInspector = new OfferInspector(repository);
+        OfferInspector offerInspector = new OfferInspector();
         return new OfferFacade(repository, externalFetcher, offerInspector);
     }
     
     static OfferFacade createForTestWithExternalThreeOffers() {
         OffersRepository repository = new OffersRepositoryTestImpl();
         ExternalFetchable externalFetcher = new ExternalFetchableTestImpl(prepareExternalOffers());
-        OfferInspector offerInspector = new OfferInspector(repository);
+        OfferInspector offerInspector = new OfferInspector();
         return new OfferFacade(repository, externalFetcher, offerInspector);
     }
     

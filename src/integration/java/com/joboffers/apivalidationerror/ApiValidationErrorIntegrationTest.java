@@ -45,7 +45,7 @@ class ApiValidationErrorIntegrationTest extends BaseIntegrationTest implements S
     }
     
     @Test
-    public void should_return_bad_request_and_message_when_provided_offer_with_already_existing_url() throws Exception {
+    public void should_return_conflict_message_when_provided_offer_with_already_existing_url() throws Exception {
         //given
         mockMvc.perform(post("/offers")
                                 .content(offerRequestJson())
@@ -57,9 +57,9 @@ class ApiValidationErrorIntegrationTest extends BaseIntegrationTest implements S
                                                         .contentType(MediaType.APPLICATION_JSON)
         );
         //then
-        MvcResult mvcResult = perform.andExpect(status().isBadRequest()).andReturn();
+        MvcResult mvcResult = perform.andExpect(status().isConflict()).andReturn();
         String json = mvcResult.getResponse().getContentAsString();
         ApiValidationResponseDto responseDto = objectMapper.readValue(json, ApiValidationResponseDto.class);
-        assertThat(responseDto.errors()).containsExactly("There is already an offer with URL: https://joboffers.com");
+        assertThat(responseDto.errors()).containsExactly("There is already an offer with such URL");
     }
 }
