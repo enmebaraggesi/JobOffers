@@ -12,4 +12,25 @@ public interface SampleJobOffersTestRequest {
                }
                """.trim();
     }
+    
+    default String offerWithEmptyPositionAndSalaryRequestJson() {
+        return """
+               {
+               "position": "",
+               "company": "Test company",
+               "salary": "",
+               "url": "https://joboffers.com"
+               }
+               """.trim();
+    }
+    
+    default String offerWithNullCompanyRequestJson() {
+        return """
+               {
+               "position": "Test position",
+               "salary": "9999 USD",
+               "url": "https://joboffers.com"
+               }
+               """.trim();
+    }
 }

@@ -3,6 +3,7 @@ package com.joboffers.infrastructure.offer.controller;
 import com.joboffers.domain.offer.OfferFacade;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.dto.OfferResponseDto;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +35,7 @@ class OfferRestController {
     }
     
     @PostMapping
-    public ResponseEntity<OfferResponseDto> createOffer(@RequestBody OfferRequestDto requestDto) {
+    public ResponseEntity<OfferResponseDto> createOffer(@RequestBody @Valid OfferRequestDto requestDto) {
         OfferResponseDto saved = offerFacade.saveOffer(requestDto);
         return ResponseEntity.ok(saved);
     }
