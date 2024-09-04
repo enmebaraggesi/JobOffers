@@ -9,6 +9,7 @@ import com.joboffers.domain.offer.ExternalFetchable;
 import com.joboffers.domain.offer.OfferFacade;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.dto.OfferResponseDto;
+import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.infrastructure.offer.scheduler.OfferScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,28 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    3. User tries to obtain JWT token making POST request to /token, but system returns UNAUTHORIZED(401)
 //    4. User tries to find offers with no JWT token making GET request to /offers, but system returns UNAUTHORIZED(401)
+        //given
+        //when
+        //then
+        
+        
 //    5. User registers successfully making POST request to /register giving username, password and email
+        //given
+        String userName = "test";
+        MockHttpServletRequestBuilder postUserRegistration = post("/register").content(userRegistrationRequestJson())
+                                                                                       .contentType(MediaType.APPLICATION_JSON);
+        //when
+        MvcResult postUserRegistrationResult = mockMvc.perform(postUserRegistration).andExpect(status().isCreated()).andReturn();
+        //then
+        String postRegistrationUserJson = postUserRegistrationResult.getResponse().getContentAsString();
+        UserRegistrationResponseDto registeredDto = objectMapper.readValue(postRegistrationUserJson, UserRegistrationResponseDto.class);
+        assertAll(
+                () -> assertThat(registeredDto.id()).isNotNull(),
+                () -> assertThat(registeredDto.name()).isEqualTo(userName),
+                () -> assertThat(registeredDto.created()).isTrue()
+        );
+
+
 //    6. User tries to obtain JWT token making POST request to /token with username and password successfully
 //    7. Registered and authorized user makes GET request to /offers with header "Authorization: Bearer {token}" and system returns OK(200) with 0 offers
         //given
@@ -93,7 +115,17 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 
 //    9. Scheduler runs 2nd time making GET request to external source adding 2 offers to database
+        //given
+        //when
+        //then
+
+
 //    10. User makes GET request to /offers with header “Authorization: Bearer {token}” and system returns OK(200) with 2 new offers
+        //given
+        //when
+        //then
+
+
 //    11. User makes GET request to /offers/{id} with authorization header and nonExistingId and system returns NOT_FOUND(404) with message "Offer with ID {id} not found"
         //given
         String nonExistingId = "nonExistingId";
@@ -106,9 +138,29 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 
 //    12. User makes GET request to /offers/{id} with authorization header and existing ID and system returns OK(200) with exact offer
+        //given
+        //when
+        //then
+
+
 //    13. There are 2 new offers to fetch from external source
+        //given
+        //when
+        //then
+
+
 //    14. Scheduler runs 3rd time making GET request to external source adding 2 offers to database
+        //given
+        //when
+        //then
+
+
 //    15. User makes GET request to /offers with authorization header and system returns OK(200) with 4 offers
+        //given
+        //when
+        //then
+
+
 //    16. User makes POST request to /offers with authorization header and system returns OK(200) with posted offer
         //given
         MockHttpServletRequestBuilder postOffer = post("/offers").content(offerRequestJson())

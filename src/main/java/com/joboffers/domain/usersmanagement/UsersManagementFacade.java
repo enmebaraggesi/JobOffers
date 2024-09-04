@@ -33,7 +33,7 @@ public class UsersManagementFacade {
                          .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
     }
     
-    UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {
+    public UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {
         User user = UserMapper.mapUserRequestDtoToUser(requestDto);
         if (inspector.inspectRegistrationRequest(user)) {
             User saved = repository.save(user);
