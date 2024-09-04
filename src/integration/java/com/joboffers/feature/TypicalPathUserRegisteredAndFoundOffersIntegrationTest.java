@@ -116,8 +116,16 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    9. Scheduler runs 2nd time making GET request to external source adding 2 offers to database
         //given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                                       .willReturn(WireMock.aResponse()
+                                                           .withStatus(HttpStatus.OK.value())
+                                                           .withHeader("Content-Type", "application/json")
+                                                           .withBody(twoOffersResponseJson())));
         //when
+        offerScheduler.scheduledOfferUpdate();
+        List<OfferResponseDto> twoOffersFound = offerFacade.findAllOffers();
         //then
+        assertThat(twoOffersFound).hasSize(2);
 
 
 //    10. User makes GET request to /offers with header “Authorization: Bearer {token}” and system returns OK(200) with 2 new offers
