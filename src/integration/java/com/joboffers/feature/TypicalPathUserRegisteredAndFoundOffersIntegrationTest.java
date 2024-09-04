@@ -130,8 +130,15 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    10. User makes GET request to /offers with header “Authorization: Bearer {token}” and system returns OK(200) with 2 new offers
         //given
+        MockHttpServletRequestBuilder getTwoOffers = get("/offers");
         //when
+        ResultActions performGetTwoOffers = mockMvc.perform(getTwoOffers);
         //then
+        MvcResult getTwoOffersResult = performGetTwoOffers.andExpect(status().isOk()).andReturn();
+        String getTwoOffersJson = getTwoOffersResult.getResponse().getContentAsString();
+        List<OfferResponseDto> getTwoOffersResponse = objectMapper.readValue(getTwoOffersJson, new TypeReference<>() {
+        });
+        assertThat(getTwoOffersResponse).hasSize(2);
 
 
 //    11. User makes GET request to /offers/{id} with authorization header and nonExistingId and system returns NOT_FOUND(404) with message "Offer with ID {id} not found"
@@ -147,26 +154,45 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    12. User makes GET request to /offers/{id} with authorization header and existing ID and system returns OK(200) with exact offer
         //given
+        String existingId = getTwoOffersResponse.get(0).id();
+        MockHttpServletRequestBuilder getOfferByExistingId = get("/offers/" + existingId);
         //when
+        ResultActions performGetOfferByExistingId = mockMvc.perform(getOfferByExistingId);
         //then
+        MvcResult getOfferByExistingIdResult = performGetOfferByExistingId.andExpect(status().isOk()).andReturn();
+        String getOfferByExistingIdJson = getOfferByExistingIdResult.getResponse().getContentAsString();
+        OfferResponseDto getOfferByExistingIdResponse = objectMapper.readValue(getOfferByExistingIdJson, OfferResponseDto.class);
+        assertThat(getOfferByExistingIdResponse.id()).isEqualTo(existingId);
 
 
 //    13. There are 2 new offers to fetch from external source
-        //given
-        //when
-        //then
+        //given & when & then
+        wireMockServer.stubFor(WireMock.get("/offers")
+                                       .willReturn(WireMock.aResponse()
+                                                           .withStatus(HttpStatus.OK.value())
+                                                           .withHeader("Content-Type", "application/json")
+                                                           .withBody(fourOffersResponseJson())));
 
 
 //    14. Scheduler runs 3rd time making GET request to external source adding 2 offers to database
-        //given
-        //when
+        //given & when
+        offerScheduler.scheduledOfferUpdate();
+        List<OfferResponseDto> offers = offerFacade.findAllOffers();
         //then
+        assertThat(offers).hasSize(4);
 
 
 //    15. User makes GET request to /offers with authorization header and system returns OK(200) with 4 offers
         //given
+        MockHttpServletRequestBuilder getFourOffers = get("/offers");
         //when
+        ResultActions performGetFourOffers = mockMvc.perform(getFourOffers);
         //then
+        MvcResult getFourOffersResult = performGetFourOffers.andExpect(status().isOk()).andReturn();
+        String getFourOffersJson = getFourOffersResult.getResponse().getContentAsString();
+        List<OfferResponseDto> getFourOffersResponse = objectMapper.readValue(getFourOffersJson, new TypeReference<>() {
+        });
+        assertThat(getFourOffersResponse).hasSize(4);
 
 
 //    16. User makes POST request to /offers with authorization header and system returns OK(200) with posted offer
