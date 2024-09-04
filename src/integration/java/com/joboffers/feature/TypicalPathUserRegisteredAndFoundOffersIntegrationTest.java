@@ -68,13 +68,13 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
         //given
         //when
         //then
-        
-        
+
+
 //    5. User registers successfully making POST request to /register giving username, password and email
         //given
         String userName = "test";
         MockHttpServletRequestBuilder postUserRegistration = post("/register").content(userRegistrationRequestJson())
-                                                                                       .contentType(MediaType.APPLICATION_JSON);
+                                                                              .contentType(MediaType.APPLICATION_JSON);
         //when
         MvcResult postUserRegistrationResult = mockMvc.perform(postUserRegistration).andExpect(status().isCreated()).andReturn();
         //then

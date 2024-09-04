@@ -54,4 +54,23 @@ public interface SampleJobOffersTestRequest {
                }
                """.trim();
     }
+    
+    default String userRegistrationEmptyNameAndPasswordRequestJson() {
+        return """
+               {
+               "name": "",
+               "email": "test@test.com",
+               "password": ""
+               }
+               """.trim();
+    }
+    
+    default String userRegistrationNullEmailRequestJson() {
+        return """
+               {
+               "name": "test",
+               "password": "testpassword"
+               }
+               """.trim();
+    }
 }

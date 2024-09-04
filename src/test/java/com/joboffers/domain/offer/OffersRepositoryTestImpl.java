@@ -142,5 +142,10 @@ class OffersRepositoryTestImpl implements OffersRepository {
     public Page<Offer> findAll(final Pageable pageable) {
         return null;
     }
+    
+    @Override
+    public boolean existsByUrl(final String url) {
+        return false;
+    }
 }
 

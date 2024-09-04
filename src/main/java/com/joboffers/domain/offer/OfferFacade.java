@@ -2,6 +2,7 @@ package com.joboffers.domain.offer;
 
 import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.dto.OfferResponseDto;
+import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
 import com.joboffers.domain.offer.error.OfferNotFoundException;
 import lombok.AllArgsConstructor;
 
@@ -37,7 +38,12 @@ public class OfferFacade {
     
     public OfferResponseDto saveOffer(final OfferRequestDto requestDto) {
         Offer offer = OfferMapper.mapOfferRequestDtoToOffer(requestDto);
-        Offer saved = repository.save(offer);
-        return OfferMapper.mapOfferToOfferResponseDto(saved);
+        if (offerInspector.inspectOfferRequest(offer)) {
+            Offer saved = repository.save(offer);
+            return OfferMapper.mapOfferToOfferResponseDto(saved);
+        } else {
+            String message = offerInspector.getError();
+            throw new DuplicateOfferUrlException(message);
+        }
     }
 }

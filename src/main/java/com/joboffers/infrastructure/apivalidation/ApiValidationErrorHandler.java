@@ -1,8 +1,8 @@
 package com.joboffers.infrastructure.apivalidation;
 
 import com.joboffers.infrastructure.apivalidation.dto.ApiValidationResponseDto;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @ControllerAdvice
+@Log4j2
 class ApiValidationErrorHandler {
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -24,12 +25,11 @@ class ApiValidationErrorHandler {
         return new ApiValidationResponseDto(errors, HttpStatus.BAD_REQUEST);
     }
     
-    @ExceptionHandler(DuplicateKeyException.class)
+    @ExceptionHandler(DuplicateKeyInRequest.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ApiValidationResponseDto handleDuplicateKeyException(DuplicateKeyException e) {
-        String message = "There is already an offer with such URL";
-        return new ApiValidationResponseDto(List.of(message), HttpStatus.CONFLICT);
+    public ApiValidationResponseDto handleDuplicateKeyException(DuplicateKeyInRequest e) {
+        return new ApiValidationResponseDto(List.of(e.getMessage()), HttpStatus.CONFLICT);
     }
     
     private List<String> getAllExceptions(final BindException e) {

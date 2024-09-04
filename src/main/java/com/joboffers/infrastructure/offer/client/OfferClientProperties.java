@@ -8,5 +8,5 @@ public record OfferClientProperties(String url,
                                     int port,
                                     int connectionTimeout,
                                     int readTimeout) {
-
+    
 }

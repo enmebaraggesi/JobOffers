@@ -118,7 +118,7 @@ class OfferFacadeTest {
         Exception caught = catchException(() -> facade.saveOffer(requestDto2));
         //then
         assertThat(caught).isInstanceOf(DuplicateOfferUrlException.class);
-        assertThat(caught.getMessage()).isEqualTo("There is already an offer with URL: " + url);
+        assertThat(caught.getMessage()).isEqualTo("Offer URL: " + url + " already exists");
     }
     
     @Test

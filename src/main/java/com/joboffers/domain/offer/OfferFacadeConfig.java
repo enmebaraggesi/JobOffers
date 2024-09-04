@@ -8,7 +8,7 @@ class OfferFacadeConfig {
     
     @Bean
     public OfferFacade getOfferFacade(ExternalFetchable fetcher, OffersRepository repository) {
-        OfferInspector inspector = new OfferInspector();
+        OfferInspector inspector = new OfferInspector(repository);
         return new OfferFacade(repository, fetcher, inspector);
     }
 }

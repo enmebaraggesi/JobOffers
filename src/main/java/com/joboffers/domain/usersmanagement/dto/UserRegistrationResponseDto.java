@@ -6,5 +6,5 @@ import lombok.Builder;
 public record UserRegistrationResponseDto(String id,
                                           String name,
                                           boolean created) {
-
+    
 }
