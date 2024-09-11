@@ -9,13 +9,14 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
 import java.util.List;
 
 @Log4j2
@@ -41,14 +42,17 @@ public class OfferClient implements ExternalFetchable {
                                                                                             });
             List<OfferExternalResponseDto> externalOfferList = response.getBody();
             if (externalOfferList == null) {
-                log.warn("Response body was null. Returning empty list.");
-                return Collections.emptyList();
+                log.warn("Response body was null.");
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT);
             }
             log.info("Successfully fetched {} offers", externalOfferList.size());
             return OfferExternalMapper.mapOfferExternalResponseDtoListToOfferRequestDtoList(externalOfferList);
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers: {}", e.getMessage());
-            return Collections.emptyList();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (RuntimeException e) {
+            log.error("Error while fetching offers: server response was corrupted and ended prematurely");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     

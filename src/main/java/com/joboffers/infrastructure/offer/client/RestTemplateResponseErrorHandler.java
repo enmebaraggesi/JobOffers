@@ -1,5 +1,6 @@
 package com.joboffers.infrastructure.offer.client;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -11,6 +12,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+@Log4j2
 public class RestTemplateResponseErrorHandler extends DefaultResponseErrorHandler {
     
     @Override
