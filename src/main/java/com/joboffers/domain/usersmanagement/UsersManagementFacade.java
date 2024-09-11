@@ -3,6 +3,7 @@ package com.joboffers.domain.usersmanagement;
 import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
+import com.joboffers.domain.usersmanagement.error.DuplicateUserCredentialsException;
 import com.joboffers.domain.usersmanagement.error.UserNotFoundException;
 import lombok.AllArgsConstructor;
 
@@ -27,18 +28,21 @@ public class UsersManagementFacade {
                          .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
     }
     
-    UserResponseDto findUserById(final Long id) {
+    UserResponseDto findUserById(final String id) {
         return repository.findById(id)
                          .map(UserMapper::mapUserToUserResponseDto)
                          .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
     }
     
-    UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {
+    public UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {
         User user = UserMapper.mapUserRequestDtoToUser(requestDto);
         if (inspector.inspectRegistrationRequest(user)) {
             User saved = repository.save(user);
             return new UserRegistrationResponseDto(saved.id(), saved.name(), true);
+        } else {
+            List<String> errors = inspector.getErrors();
+            String message = String.join(", ", errors);
+            throw new DuplicateUserCredentialsException(message);
         }
-        return new UserRegistrationResponseDto(null, user.name(), false);
     }
 }

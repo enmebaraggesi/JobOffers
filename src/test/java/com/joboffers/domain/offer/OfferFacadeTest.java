@@ -26,14 +26,14 @@ class OfferFacadeTest {
     @Test
     void should_throw_an_error_and_find_no_offer_by_id_when_there_are_no_offers() {
         //given
-        Long id = 1L;
+        String id = "abc";
         OfferFacade facade = OfferFacadeTestConfig.createForTest();
         assertThat(facade.findAllOffers()).isEmpty();
         //when
         Exception caught = catchException(() -> facade.findOfferById(id));
         //then
         assertThat(caught).isInstanceOf(OfferNotFoundException.class);
-        assertThat(caught.getMessage()).isEqualTo("Offer not found");
+        assertThat(caught.getMessage()).isEqualTo("Offer with ID " + id + " not found");
     }
     
     @Test
@@ -51,7 +51,7 @@ class OfferFacadeTest {
         OfferResponseDto response = facade.saveOffer(requestDto);
         //then
         assertThat(response).isEqualTo(OfferResponseDto.builder()
-                                                       .id(1L)
+                                                       .id(response.id())
                                                        .position("testPosition")
                                                        .company("testCompany")
                                                        .salary("0")
@@ -81,14 +81,14 @@ class OfferFacadeTest {
         OfferResponseDto response2 = facade.saveOffer(requestDto2);
         //then
         assertThat(response1).isEqualTo(OfferResponseDto.builder()
-                                                        .id(1L)
+                                                        .id(response1.id())
                                                         .position("testPosition1")
                                                         .company("testCompany1")
                                                         .salary("1")
                                                         .url("https://example1.com")
                                                         .build());
         assertThat(response2).isEqualTo(OfferResponseDto.builder()
-                                                        .id(2L)
+                                                        .id(response2.id())
                                                         .position("testPosition2")
                                                         .company("testCompany2")
                                                         .salary("2")
@@ -118,7 +118,7 @@ class OfferFacadeTest {
         Exception caught = catchException(() -> facade.saveOffer(requestDto2));
         //then
         assertThat(caught).isInstanceOf(DuplicateOfferUrlException.class);
-        assertThat(caught.getMessage()).isEqualTo("There is already an offer with such url");
+        assertThat(caught.getMessage()).isEqualTo("Offer URL: " + url + " already exists");
     }
     
     @Test
@@ -137,22 +137,22 @@ class OfferFacadeTest {
                                                      .url("https://example2.com")
                                                      .build();
         OfferFacade facade = OfferFacadeTestConfig.createForTest();
-        facade.saveOffer(requestDto1);
-        facade.saveOffer(requestDto2);
+        OfferResponseDto saved1 = facade.saveOffer(requestDto1);
+        OfferResponseDto saved2 = facade.saveOffer(requestDto2);
         //when
         List<OfferResponseDto> response = facade.findAllOffers();
         //then
         assertThat(response).isNotEmpty()
                             .hasSize(2)
                             .contains(OfferResponseDto.builder()
-                                                      .id(1L)
+                                                      .id(saved1.id())
                                                       .position("testPosition1")
                                                       .company("testCompany1")
                                                       .salary("1")
                                                       .url("https://example1.com")
                                                       .build(),
                                       OfferResponseDto.builder()
-                                                      .id(2L)
+                                                      .id(saved2.id())
                                                       .position("testPosition2")
                                                       .company("testCompany2")
                                                       .salary("2")
@@ -163,7 +163,6 @@ class OfferFacadeTest {
     @Test
     void should_find_an_offer_by_id() {
         //given
-        Long id = 1L;
         OfferRequestDto offerDto = OfferRequestDto.builder()
                                                   .position("testPosition")
                                                   .company("testCompany")
@@ -172,12 +171,12 @@ class OfferFacadeTest {
                                                   .build();
         OfferFacade facade = OfferFacadeTestConfig.createForTest();
         assertThat(facade.findAllOffers()).isEmpty();
-        facade.saveOffer(offerDto);
+        OfferResponseDto saved = facade.saveOffer(offerDto);
         //when
-        OfferResponseDto response = facade.findOfferById(id);
+        OfferResponseDto response = facade.findOfferById(saved.id());
         //then
         assertThat(response).isEqualTo(OfferResponseDto.builder()
-                                                       .id(1L)
+                                                       .id(saved.id())
                                                        .position("testPosition")
                                                        .company("testCompany")
                                                        .salary("0")

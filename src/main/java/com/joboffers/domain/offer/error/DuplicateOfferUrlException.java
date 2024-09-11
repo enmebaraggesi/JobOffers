@@ -1,6 +1,8 @@
 package com.joboffers.domain.offer.error;
 
-public class DuplicateOfferUrlException extends RuntimeException {
+import com.joboffers.infrastructure.apivalidation.DuplicateKeyInRequest;
+
+public class DuplicateOfferUrlException extends DuplicateKeyInRequest {
     
     public DuplicateOfferUrlException(final String message) {
         super(message);

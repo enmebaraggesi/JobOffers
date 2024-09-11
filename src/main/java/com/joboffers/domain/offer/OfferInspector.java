@@ -1,31 +1,18 @@
 package com.joboffers.domain.offer;
 
-import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.domain.offer.dto.OfferRequestDto;
-import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
-import lombok.AllArgsConstructor;
+import com.joboffers.domain.offer.dto.OfferResponseDto;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
 
-import static com.joboffers.domain.offer.ResponseMessage.DUPLICATE_URL;
-
-@AllArgsConstructor
+@Getter
+@RequiredArgsConstructor
 class OfferInspector {
     
     private final OffersRepository repository;
-    
-    void inspectUrl(final OfferRequestDto dto) {
-        String url = dto.url();
-        if (isDuplicateUrl(url)) {
-            throw new DuplicateOfferUrlException(DUPLICATE_URL.message);
-        }
-    }
-    
-    private boolean isDuplicateUrl(String url) {
-        Optional<Offer> foundByUrl = repository.findByUrl(url);
-        return foundByUrl.isPresent();
-    }
+    private String error;
     
     List<OfferRequestDto> filterOutExistingOffers(final List<OfferRequestDto> fetched, final List<OfferResponseDto> existing) {
         return fetched.stream()
@@ -36,5 +23,17 @@ class OfferInspector {
     private boolean isNoneMatch(List<OfferResponseDto> existing, OfferRequestDto offer) {
         return existing.stream()
                        .noneMatch(offerDto -> offerDto.url().equals(offer.url()));
+    }
+    
+    boolean inspectOfferRequest(final Offer offer) {
+        return isUrlValid(offer.url());
+    }
+    
+    private boolean isUrlValid(final String url) {
+        if (repository.existsByUrl(url)) {
+            error = "Offer URL: " + url + " already exists";
+            return false;
+        }
+        return true;
     }
 }

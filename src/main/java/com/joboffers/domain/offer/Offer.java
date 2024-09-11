@@ -1,12 +1,17 @@
 package com.joboffers.domain.offer;
 
 import lombok.Builder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Builder
-record Offer(Long id,
-             String position,
-             String company,
-             String salary,
-             String url) {
+@Document
+record Offer(
+        @Id String id,
+        String position,
+        String company,
+        String salary,
+        @Indexed(unique = true) String url) {
     
 }
