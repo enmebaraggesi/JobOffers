@@ -1,5 +1,6 @@
 package com.joboffers.domain.usersmanagement;
 
+import com.joboffers.domain.usersmanagement.dto.UserDto;
 import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
@@ -125,22 +126,25 @@ class UsersManagementFacadeTest {
     void should_find_user_by_name() {
         //given
         String name = "user1";
+        String mail = "user1@email.com";
+        String password = "password1";
         UserRequestDto requestDto = UserRequestDto.builder()
                                                   .name(name)
-                                                  .email("user1@email.com")
-                                                  .password("password1")
+                                                  .email(mail)
+                                                  .password(password)
                                                   .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         UserRegistrationResponseDto saved = facade.saveUser(requestDto);
         assertThat(facade.findAllUsers()).hasSize(1);
         //when
-        UserResponseDto response = facade.findUserByName(name);
+        UserDto response = facade.findUserByName(name);
         //then
         assertThat(response).isNotNull()
-                            .isEqualTo(UserResponseDto.builder()
-                                                      .id(saved.id())
-                                                      .name(name)
-                                                      .email("user1@email.com")
-                                                      .build());
+                            .isEqualTo(UserDto.builder()
+                                              .id(saved.id())
+                                              .name(name)
+                                              .email(mail)
+                                              .password(password)
+                                              .build());
     }
 }

@@ -1,5 +1,6 @@
 package com.joboffers.domain.usersmanagement;
 
+import com.joboffers.domain.usersmanagement.dto.UserDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
 
@@ -27,5 +28,14 @@ class UserMapper {
                    .email(requestDto.email())
                    .password(requestDto.password())
                    .build();
+    }
+    
+    static UserDto mapUserToUserDto(User user) {
+        return UserDto.builder()
+                      .id(user.id())
+                      .name(user.name())
+                      .email(user.email())
+                      .password(user.password())
+                      .build();
     }
 }

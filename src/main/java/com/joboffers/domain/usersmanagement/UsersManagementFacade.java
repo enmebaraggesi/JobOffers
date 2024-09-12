@@ -1,5 +1,6 @@
 package com.joboffers.domain.usersmanagement;
 
+import com.joboffers.domain.usersmanagement.dto.UserDto;
 import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
@@ -22,9 +23,9 @@ public class UsersManagementFacade {
         return UserMapper.mapUserListToUserResponseDtoList(users);
     }
     
-    UserResponseDto findUserByName(final String name) {
+    public UserDto findUserByName(final String name) {
         return repository.findByName(name)
-                         .map(UserMapper::mapUserToUserResponseDto)
+                         .map(UserMapper::mapUserToUserDto)
                          .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
     }
     

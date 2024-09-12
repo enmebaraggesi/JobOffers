@@ -2,12 +2,22 @@ package com.joboffers.infrastructure.security.jwtauthenticator;
 
 import com.joboffers.infrastructure.usermanagement.controller.dto.JwtResponseDto;
 import com.joboffers.infrastructure.usermanagement.controller.dto.TokenRequestDto;
+import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class JwtAuthenticator {
     
+    private final AuthenticationManager authenticationManager;
+    
     public JwtResponseDto authenticateAndGenerateToken(final TokenRequestDto requestDto) {
-        return null;
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(requestDto.username(), requestDto.password())
+        );
+        return JwtResponseDto.builder().build();
     }
 }
