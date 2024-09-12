@@ -77,6 +77,27 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 
 //    3. User tries to obtain JWT token making POST request to /token, but system returns UNAUTHORIZED(401)
+        //given
+        MockHttpServletRequestBuilder postFailedTokenRequest = post("/token").content("""
+                                                                                      {
+                                                                                      "username": "testUser",
+                                                                                      "password": "testPassword"
+                                                                                      }
+                                                                                      """)
+                                                                             .contentType(MediaType.APPLICATION_JSON);
+        //when
+        ResultActions failedTokenRequestResult = mockMvc.perform(postFailedTokenRequest);
+        //then
+        failedTokenRequestResult.andExpect(status().isUnauthorized())
+                                .andExpect(content().json("""
+                                                          {
+                                                          "message": "Bad Credentials",
+                                                          "status": "UNAUTHORIZED"
+                                                          }
+                                                          """.trim())
+                                );
+
+
 //    4. User tries to find offers with no JWT token making GET request to /offers, but system returns UNAUTHORIZED(401)
         //given
         //when
