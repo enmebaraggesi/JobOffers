@@ -11,6 +11,7 @@ import com.joboffers.domain.offer.dto.OfferRequestDto;
 import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.infrastructure.offer.scheduler.OfferScheduler;
+import com.joboffers.infrastructure.security.jwtauthenticator.dto.JwtResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -114,6 +116,22 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 
 //    6. User tries to obtain JWT token making POST request to /token with username and password successfully
+        //given
+        MockHttpServletRequestBuilder postTokenRequest = post("/token").content(tokenRequestJson())
+                                                                       .contentType(MediaType.APPLICATION_JSON);
+        //when
+        ResultActions performPostTokenRequest = mockMvc.perform(postTokenRequest);
+        //then
+        MvcResult postTokenRequestResult = performPostTokenRequest.andExpect(status().isOk()).andReturn();
+        String postTokenRequestJson = postTokenRequestResult.getResponse().getContentAsString();
+        JwtResponseDto postTokenRequestResponseDto = objectMapper.readValue(postTokenRequestJson, JwtResponseDto.class);
+        assertAll(
+                () -> assertThat(postTokenRequestResponseDto.token()).isNotNull(),
+                () -> assertThat(postTokenRequestResponseDto.token()).matches(Pattern.compile("^[\\w-]+\\.[\\w-]+\\.[\\w-]+$")),
+                () -> assertThat(postTokenRequestResponseDto.username()).isEqualTo(userName)
+        );
+
+
 //    7. Registered and authorized user makes GET request to /offers with header "Authorization: Bearer {token}" and system returns OK(200) with 0 offers
         //given
         MockHttpServletRequestBuilder getAllOffersRequest = get("/offers");

@@ -1,12 +1,20 @@
 package com.joboffers.infrastructure.security.jwtauthenticator;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.joboffers.infrastructure.security.jwtauthenticator.dto.JwtResponseDto;
 import com.joboffers.infrastructure.security.token.dto.TokenRequestDto;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Component
 @AllArgsConstructor
@@ -18,6 +26,27 @@ public class JwtAuthenticator {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(requestDto.username(), requestDto.password())
         );
-        return JwtResponseDto.builder().build();
+        User user = (User) authentication.getPrincipal();
+        String token = createToken(user);
+        String username = user.getUsername();
+        return JwtResponseDto.builder()
+                             .username(username)
+                             .token(token)
+                             .build();
+    }
+    
+    private String createToken(final User user) {
+        String subject = user.getUsername();
+        Instant issuedAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+        Instant expiresAt = issuedAt.plus(Duration.ofDays(30));
+        String issuer = "JobOffers";
+        String secretKey = "secretKey";
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        return JWT.create()
+                  .withSubject(subject)
+                  .withIssuedAt(issuedAt)
+                  .withExpiresAt(expiresAt)
+                  .withIssuer(issuer)
+                  .sign(algorithm);
     }
 }

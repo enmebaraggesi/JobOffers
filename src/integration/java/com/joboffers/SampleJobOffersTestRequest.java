@@ -78,7 +78,7 @@ public interface SampleJobOffersTestRequest {
         return """
                {
                "username": "test",
-               "password": "test"
+               "password": "testpassword"
                }
                """.trim();
     }
