@@ -1,4 +1,4 @@
-package com.joboffers.infrastructure.usermanagement.controller.dto;
+package com.joboffers.infrastructure.security.jwtauthenticator.dto;
 
 import lombok.Builder;
 

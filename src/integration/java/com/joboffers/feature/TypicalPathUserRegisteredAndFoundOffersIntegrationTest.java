@@ -78,30 +78,22 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    3. User tries to obtain JWT token making POST request to /token, but system returns UNAUTHORIZED(401)
         //given
-        MockHttpServletRequestBuilder postFailedTokenRequest = post("/token").content("""
-                                                                                      {
-                                                                                      "username": "test",
-                                                                                      "password": "test"
-                                                                                      }
-                                                                                      """.trim())
+        MockHttpServletRequestBuilder postFailedTokenRequest = post("/token").content(tokenRequestJson())
                                                                              .contentType(MediaType.APPLICATION_JSON);
         //when
-        ResultActions failedTokenRequestResult = mockMvc.perform(postFailedTokenRequest);
+        ResultActions performPostFailedTokenRequest = mockMvc.perform(postFailedTokenRequest);
         //then
-        failedTokenRequestResult.andExpect(status().isUnauthorized())
-                                .andExpect(content().json("""
-                                                          {
-                                                          "message": "Bad Credentials",
-                                                          "status": "UNAUTHORIZED"
-                                                          }
-                                                          """.trim())
-                                );
+        performPostFailedTokenRequest.andExpect(status().isUnauthorized())
+                                     .andExpect(content().json(unauthorizedResponseJson()));
 
 
 //    4. User tries to find offers with no JWT token making GET request to /offers, but system returns UNAUTHORIZED(401)
         //given
+        MockHttpServletRequestBuilder getFailedOffersRequest = get("/offers");
         //when
+        ResultActions performGetFailedOffersRequest = mockMvc.perform(getFailedOffersRequest);
         //then
+        performGetFailedOffersRequest.andExpect(status().isUnauthorized());
 
 
 //    5. User registers successfully making POST request to /register giving username, password and email
@@ -141,7 +133,8 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
                                        .willReturn(WireMock.aResponse()
                                                            .withStatus(HttpStatus.OK.value())
                                                            .withHeader("Content-Type", "application/json")
-                                                           .withBody(twoOffersResponseJson())));
+                                                           .withBody(twoOffersResponseJson()))
+        );
         //when
         List<OfferRequestDto> twoOffersList = externalFetchable.fetchNewOffers();
         //then
@@ -154,7 +147,8 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
                                        .willReturn(WireMock.aResponse()
                                                            .withStatus(HttpStatus.OK.value())
                                                            .withHeader("Content-Type", "application/json")
-                                                           .withBody(twoOffersResponseJson())));
+                                                           .withBody(twoOffersResponseJson()))
+        );
         //when
         offerScheduler.scheduledOfferUpdate();
         List<OfferResponseDto> twoOffersFound = offerFacade.findAllOffers();
@@ -205,7 +199,8 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
                                        .willReturn(WireMock.aResponse()
                                                            .withStatus(HttpStatus.OK.value())
                                                            .withHeader("Content-Type", "application/json")
-                                                           .withBody(fourOffersResponseJson())));
+                                                           .withBody(fourOffersResponseJson()))
+        );
 
 
 //    14. Scheduler runs 3rd time making GET request to external source adding 2 offers to database

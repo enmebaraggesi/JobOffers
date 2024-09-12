@@ -1,8 +1,8 @@
-package com.joboffers.infrastructure.usermanagement.controller;
+package com.joboffers.infrastructure.security.token;
 
 import com.joboffers.infrastructure.security.jwtauthenticator.JwtAuthenticator;
-import com.joboffers.infrastructure.usermanagement.controller.dto.JwtResponseDto;
-import com.joboffers.infrastructure.usermanagement.controller.dto.TokenRequestDto;
+import com.joboffers.infrastructure.security.jwtauthenticator.dto.JwtResponseDto;
+import com.joboffers.infrastructure.security.token.dto.TokenRequestDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

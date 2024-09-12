@@ -1,4 +1,4 @@
-package com.joboffers.infrastructure.usermanagement.controller.dto;
+package com.joboffers.infrastructure.security.token.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

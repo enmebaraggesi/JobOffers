@@ -2,10 +2,10 @@ package com.joboffers.domain.usersmanagement;
 
 import com.joboffers.domain.usersmanagement.dto.UserDto;
 import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
-import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
+import com.joboffers.infrastructure.usermanagement.controller.dto.UserRegistrationRequestDto;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.List;
 
@@ -33,18 +33,18 @@ class UsersManagementFacadeTest {
         //when
         Exception caught = catchException(() -> facade.findUserByName(name));
         //then
-        assertThat(caught).isInstanceOf(UsernameNotFoundException.class);
+        assertThat(caught).isInstanceOf(BadCredentialsException.class);
         assertThat(caught.getMessage()).isEqualTo("User not found");
     }
     
     @Test
     void should_save_user_properly() {
         //given
-        UserRequestDto requestDto = UserRequestDto.builder()
-                                                  .name("user1")
-                                                  .email("user1@email.com")
-                                                  .password("password1")
-                                                  .build();
+        UserRegistrationRequestDto requestDto = UserRegistrationRequestDto.builder()
+                                                                          .username("user1")
+                                                                          .email("user1@email.com")
+                                                                          .password("password1")
+                                                                          .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         assertThat(facade.findAllUsers()).isEmpty();
         //when
@@ -58,16 +58,16 @@ class UsersManagementFacadeTest {
     @Test
     void should_save_two_users_properly() {
         //given
-        UserRequestDto requestDto1 = UserRequestDto.builder()
-                                                   .name("user1")
-                                                   .email("user1@email.com")
-                                                   .password("password1")
-                                                   .build();
-        UserRequestDto requestDto2 = UserRequestDto.builder()
-                                                   .name("user2")
-                                                   .email("user2@email.com")
-                                                   .password("password2")
-                                                   .build();
+        UserRegistrationRequestDto requestDto1 = UserRegistrationRequestDto.builder()
+                                                                           .username("user1")
+                                                                           .email("user1@email.com")
+                                                                           .password("password1")
+                                                                           .build();
+        UserRegistrationRequestDto requestDto2 = UserRegistrationRequestDto.builder()
+                                                                           .username("user2")
+                                                                           .email("user2@email.com")
+                                                                           .password("password2")
+                                                                           .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         assertThat(facade.findAllUsers()).isEmpty();
         //when
@@ -93,11 +93,11 @@ class UsersManagementFacadeTest {
         String name = "user1";
         String mail = "user1@email.com";
         String password = "password1";
-        UserRequestDto requestDto = UserRequestDto.builder()
-                                                  .name(name)
-                                                  .email(mail)
-                                                  .password(password)
-                                                  .build();
+        UserRegistrationRequestDto requestDto = UserRegistrationRequestDto.builder()
+                                                                          .username(name)
+                                                                          .email(mail)
+                                                                          .password(password)
+                                                                          .build();
         UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
         UserRegistrationResponseDto saved = facade.saveUser(requestDto);
         assertThat(facade.findAllUsers()).hasSize(1);

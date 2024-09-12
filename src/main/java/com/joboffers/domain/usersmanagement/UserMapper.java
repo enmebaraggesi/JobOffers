@@ -1,8 +1,8 @@
 package com.joboffers.domain.usersmanagement;
 
 import com.joboffers.domain.usersmanagement.dto.UserDto;
-import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
+import com.joboffers.infrastructure.usermanagement.controller.dto.UserRegistrationRequestDto;
 
 import java.util.List;
 
@@ -22,9 +22,9 @@ class UserMapper {
                               .build();
     }
     
-    static User mapUserRequestDtoToUser(final UserRequestDto requestDto) {
+    static User mapUserRegistrationRequestDtoToUser(final UserRegistrationRequestDto requestDto) {
         return User.builder()
-                   .name(requestDto.name())
+                   .name(requestDto.username())
                    .email(requestDto.email())
                    .password(requestDto.password())
                    .build();

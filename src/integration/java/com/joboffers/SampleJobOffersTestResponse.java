@@ -64,4 +64,13 @@ public interface SampleJobOffersTestResponse {
                }
                """.trim();
     }
+    
+    default String unauthorizedResponseJson() {
+        return """
+               {
+               "message": "Bad Credentials",
+               "status": "UNAUTHORIZED"
+               }
+               """.trim();
+    }
 }
