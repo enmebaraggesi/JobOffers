@@ -50,7 +50,7 @@ public class OfferClient implements ExternalFetchable {
         } catch (ResourceAccessException e) {
             log.error("Error while fetching offers: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
             log.error("Error while fetching offers: server response was corrupted and ended prematurely");
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
