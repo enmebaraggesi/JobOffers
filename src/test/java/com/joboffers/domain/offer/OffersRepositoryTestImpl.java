@@ -44,6 +44,13 @@ class OffersRepositoryTestImpl implements OffersRepository {
     }
     
     @Override
+    public boolean existsByUrl(final String url) {
+        return inMemoryDatabase.values()
+                               .stream()
+                               .anyMatch(offer -> offer.url().equals(url));
+    }
+    
+    @Override
     public Optional<Offer> findById(final String id) {
         return Optional.ofNullable(inMemoryDatabase.get(id));
     }
@@ -141,11 +148,6 @@ class OffersRepositoryTestImpl implements OffersRepository {
     @Override
     public Page<Offer> findAll(final Pageable pageable) {
         return null;
-    }
-    
-    @Override
-    public boolean existsByUrl(final String url) {
-        return false;
     }
 }
 
