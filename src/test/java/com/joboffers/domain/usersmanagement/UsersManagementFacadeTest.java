@@ -4,8 +4,8 @@ import com.joboffers.domain.usersmanagement.dto.UserDto;
 import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
-import com.joboffers.domain.usersmanagement.error.UserNotFoundException;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
@@ -25,19 +25,6 @@ class UsersManagementFacadeTest {
     }
     
     @Test
-    void should_throw_exception_when_there_is_no_user_with_such_id() {
-        //given
-        String id = "abc";
-        UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
-        assertThat(facade.findAllUsers()).isEmpty();
-        //when
-        Exception caught = catchException(() -> facade.findUserById(id));
-        //then
-        assertThat(caught).isInstanceOf(UserNotFoundException.class);
-        assertThat(caught.getMessage()).isEqualTo("User not found");
-    }
-    
-    @Test
     void should_throw_exception_when_there_is_no_user_with_such_name() {
         //given
         String name = "user1";
@@ -46,7 +33,7 @@ class UsersManagementFacadeTest {
         //when
         Exception caught = catchException(() -> facade.findUserByName(name));
         //then
-        assertThat(caught).isInstanceOf(UserNotFoundException.class);
+        assertThat(caught).isInstanceOf(UsernameNotFoundException.class);
         assertThat(caught.getMessage()).isEqualTo("User not found");
     }
     
@@ -98,28 +85,6 @@ class UsersManagementFacadeTest {
                                                                    .name("user2")
                                                                    .created(true)
                                                                    .build());
-    }
-    
-    @Test
-    void should_find_user_by_id() {
-        //given
-        UserRequestDto requestDto = UserRequestDto.builder()
-                                                  .name("user1")
-                                                  .email("user1@email.com")
-                                                  .password("password1")
-                                                  .build();
-        UsersManagementFacade facade = UsersManagementFacadeTestConfig.createForTest();
-        UserRegistrationResponseDto saved = facade.saveUser(requestDto);
-        assertThat(facade.findAllUsers()).hasSize(1);
-        //when
-        UserResponseDto response = facade.findUserById(saved.id());
-        //then
-        assertThat(response).isNotNull()
-                            .isEqualTo(UserResponseDto.builder()
-                                                      .id(saved.id())
-                                                      .name("user1")
-                                                      .email("user1@email.com")
-                                                      .build());
     }
     
     @Test

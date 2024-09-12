@@ -5,15 +5,15 @@ import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
 import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
 import com.joboffers.domain.usersmanagement.error.DuplicateUserCredentialsException;
-import com.joboffers.domain.usersmanagement.error.UserNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.List;
 
-import static com.joboffers.domain.usersmanagement.ResponseMessage.USER_NOT_FOUND;
-
 @AllArgsConstructor
 public class UsersManagementFacade {
+    
+    private static final String USER_NOT_FOUND = "User not found";
     
     private final UsersRepository repository;
     private final UserInspector inspector;
@@ -26,13 +26,7 @@ public class UsersManagementFacade {
     public UserDto findUserByName(final String name) {
         return repository.findByName(name)
                          .map(UserMapper::mapUserToUserDto)
-                         .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
-    }
-    
-    UserResponseDto findUserById(final String id) {
-        return repository.findById(id)
-                         .map(UserMapper::mapUserToUserResponseDto)
-                         .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
+                         .orElseThrow(() -> new BadCredentialsException(USER_NOT_FOUND));
     }
     
     public UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {

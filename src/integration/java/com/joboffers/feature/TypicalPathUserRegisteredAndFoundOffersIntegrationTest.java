@@ -80,10 +80,10 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
         //given
         MockHttpServletRequestBuilder postFailedTokenRequest = post("/token").content("""
                                                                                       {
-                                                                                      "username": "testUser",
-                                                                                      "password": "testPassword"
+                                                                                      "username": "test",
+                                                                                      "password": "test"
                                                                                       }
-                                                                                      """)
+                                                                                      """.trim())
                                                                              .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions failedTokenRequestResult = mockMvc.perform(postFailedTokenRequest);
