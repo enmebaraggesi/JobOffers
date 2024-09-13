@@ -5,7 +5,6 @@ import com.joboffers.infrastructure.security.jwtauthenticator.LoginUserDetailsSe
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -36,18 +35,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                           .httpBasic(AbstractHttpConfigurer::disable)
+                           .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                            .authorizeHttpRequests(auth -> auth
                                    .requestMatchers("/swagger-ui/**").permitAll()
-                                   .requestMatchers("/swagger-ui/**").permitAll()
-                                   .requestMatchers("/v3/api-docs").permitAll()
+                                   .requestMatchers("/v3/api-docs/**").permitAll()
                                    .requestMatchers("/webjars/**").permitAll()
                                    .requestMatchers("/token/**").permitAll()
                                    .requestMatchers("/register/**").permitAll()
                                    .requestMatchers("/swagger-resources/**").permitAll()
                                    .anyRequest().authenticated()
                            )
-                           .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                           .httpBasic(Customizer.withDefaults())
                            .build();
     }
 }

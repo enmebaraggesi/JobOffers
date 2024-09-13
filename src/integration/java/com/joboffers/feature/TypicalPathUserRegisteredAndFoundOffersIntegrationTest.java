@@ -125,16 +125,19 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
         MvcResult postTokenRequestResult = performPostTokenRequest.andExpect(status().isOk()).andReturn();
         String postTokenRequestJson = postTokenRequestResult.getResponse().getContentAsString();
         JwtResponseDto postTokenRequestResponseDto = objectMapper.readValue(postTokenRequestJson, JwtResponseDto.class);
+        String token = postTokenRequestResponseDto.token();
         assertAll(
-                () -> assertThat(postTokenRequestResponseDto.token()).isNotNull(),
-                () -> assertThat(postTokenRequestResponseDto.token()).matches(Pattern.compile("^[\\w-]+\\.[\\w-]+\\.[\\w-]+$")),
+                () -> assertThat(token).isNotNull(),
+                () -> assertThat(token).matches(Pattern.compile("^[\\w-]+\\.[\\w-]+\\.[\\w-]+$")),
                 () -> assertThat(postTokenRequestResponseDto.username()).isEqualTo(userName)
         );
 
 
 //    7. Registered and authorized user makes GET request to /offers with header "Authorization: Bearer {token}" and system returns OK(200) with 0 offers
         //given
-        MockHttpServletRequestBuilder getAllOffersRequest = get("/offers");
+        MockHttpServletRequestBuilder getAllOffersRequest = get("/offers")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performGetAllOffers = mockMvc.perform(getAllOffersRequest);
         //then
