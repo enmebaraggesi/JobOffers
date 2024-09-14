@@ -1,18 +1,19 @@
 package com.joboffers.domain.usersmanagement;
 
+import com.joboffers.domain.usersmanagement.dto.UserDto;
 import com.joboffers.domain.usersmanagement.dto.UserRegistrationResponseDto;
-import com.joboffers.domain.usersmanagement.dto.UserRequestDto;
 import com.joboffers.domain.usersmanagement.dto.UserResponseDto;
 import com.joboffers.domain.usersmanagement.error.DuplicateUserCredentialsException;
-import com.joboffers.domain.usersmanagement.error.UserNotFoundException;
+import com.joboffers.infrastructure.usermanagement.controller.dto.UserRegistrationRequestDto;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.List;
 
-import static com.joboffers.domain.usersmanagement.ResponseMessage.USER_NOT_FOUND;
-
 @AllArgsConstructor
 public class UsersManagementFacade {
+    
+    private static final String USER_NOT_FOUND = "User not found";
     
     private final UsersRepository repository;
     private final UserInspector inspector;
@@ -22,20 +23,14 @@ public class UsersManagementFacade {
         return UserMapper.mapUserListToUserResponseDtoList(users);
     }
     
-    UserResponseDto findUserByName(final String name) {
+    public UserDto findUserByName(final String name) {
         return repository.findByName(name)
-                         .map(UserMapper::mapUserToUserResponseDto)
-                         .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
+                         .map(UserMapper::mapUserToUserDto)
+                         .orElseThrow(() -> new BadCredentialsException(USER_NOT_FOUND));
     }
     
-    UserResponseDto findUserById(final String id) {
-        return repository.findById(id)
-                         .map(UserMapper::mapUserToUserResponseDto)
-                         .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.message));
-    }
-    
-    public UserRegistrationResponseDto saveUser(final UserRequestDto requestDto) {
-        User user = UserMapper.mapUserRequestDtoToUser(requestDto);
+    public UserRegistrationResponseDto saveUser(final UserRegistrationRequestDto requestDto) {
+        User user = UserMapper.mapUserRegistrationRequestDtoToUser(requestDto);
         if (inspector.inspectRegistrationRequest(user)) {
             User saved = repository.save(user);
             return new UserRegistrationResponseDto(saved.id(), saved.name(), true);

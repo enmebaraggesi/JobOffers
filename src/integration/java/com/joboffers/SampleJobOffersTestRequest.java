@@ -73,4 +73,13 @@ public interface SampleJobOffersTestRequest {
                }
                """.trim();
     }
+    
+    default String tokenRequestJson() {
+        return """
+               {
+               "username": "test",
+               "password": "testpassword"
+               }
+               """.trim();
+    }
 }

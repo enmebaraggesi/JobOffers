@@ -17,3 +17,5 @@ Application is made as modular monolith. Every module should take care over one 
 
 ### JwtAuthenticator module endpoints:
 * **POST /token** - generating new token and binding to user
+
+[//]: # (todo - new architecture including security)
