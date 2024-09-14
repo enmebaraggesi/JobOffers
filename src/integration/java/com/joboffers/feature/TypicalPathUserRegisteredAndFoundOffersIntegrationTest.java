@@ -89,20 +89,21 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
                                      .andExpect(content().json(unauthorizedResponseJson()));
 
 
-//    4. User tries to find offers with no JWT token making GET request to /offers, but system returns UNAUTHORIZED(401)
+//    4. User tries to find offers with no JWT token making GET request to /offers, but system returns FORBIDDEN(403)
         //given
         MockHttpServletRequestBuilder getFailedOffersRequest = get("/offers");
         //when
         ResultActions performGetFailedOffersRequest = mockMvc.perform(getFailedOffersRequest);
         //then
-        performGetFailedOffersRequest.andExpect(status().isUnauthorized());
+        performGetFailedOffersRequest.andExpect(status().isForbidden());
 
 
 //    5. User registers successfully making POST request to /register giving username, password and email
         //given
         String userName = "test";
-        MockHttpServletRequestBuilder postUserRegistration = post("/register").content(userRegistrationRequestJson())
-                                                                              .contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder postUserRegistration = post("/register")
+                .content(userRegistrationRequestJson())
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         MvcResult postUserRegistrationResult = mockMvc.perform(postUserRegistration).andExpect(status().isCreated()).andReturn();
         //then
@@ -117,8 +118,9 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    6. User tries to obtain JWT token making POST request to /token with username and password successfully
         //given
-        MockHttpServletRequestBuilder postTokenRequest = post("/token").content(tokenRequestJson())
-                                                                       .contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder postTokenRequest = post("/token")
+                .content(tokenRequestJson())
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performPostTokenRequest = mockMvc.perform(postTokenRequest);
         //then
@@ -179,7 +181,9 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    10. User makes GET request to /offers with header “Authorization: Bearer {token}” and system returns OK(200) with 2 new offers
         //given
-        MockHttpServletRequestBuilder getTwoOffers = get("/offers");
+        MockHttpServletRequestBuilder getTwoOffers = get("/offers")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performGetTwoOffers = mockMvc.perform(getTwoOffers);
         //then
@@ -193,7 +197,9 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 //    11. User makes GET request to /offers/{id} with authorization header and nonExistingId and system returns NOT_FOUND(404) with message "Offer with ID {id} not found"
         //given
         String nonExistingId = "nonExistingId";
-        MockHttpServletRequestBuilder getOfferByNonExistingId = get("/offers/" + nonExistingId);
+        MockHttpServletRequestBuilder getOfferByNonExistingId = get("/offers/" + nonExistingId)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performGetOfferByNonExistingId = mockMvc.perform(getOfferByNonExistingId);
         //then
@@ -203,8 +209,11 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    12. User makes GET request to /offers/{id} with authorization header and existing ID and system returns OK(200) with exact offer
         //given
-        String existingId = getTwoOffersResponse.get(0).id();
-        MockHttpServletRequestBuilder getOfferByExistingId = get("/offers/" + existingId);
+        String existingId = getTwoOffersResponse.get(0)
+                                                .id();
+        MockHttpServletRequestBuilder getOfferByExistingId = get("/offers/" + existingId)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performGetOfferByExistingId = mockMvc.perform(getOfferByExistingId);
         //then
@@ -234,7 +243,9 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    15. User makes GET request to /offers with authorization header and system returns OK(200) with 4 offers
         //given
-        MockHttpServletRequestBuilder getFourOffers = get("/offers");
+        MockHttpServletRequestBuilder getFourOffers = get("/offers")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performGetFourOffers = mockMvc.perform(getFourOffers);
         //then
@@ -247,8 +258,10 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 
 //    16. User makes POST request to /offers with authorization header and system returns OK(200) with posted offer
         //given
-        MockHttpServletRequestBuilder postOffer = post("/offers").content(offerRequestJson())
-                                                                 .contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder postOffer = post("/offers")
+                .content(offerRequestJson())
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performPostOffer = mockMvc.perform(postOffer);
         //then
@@ -267,7 +280,9 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
 //    17. User makes GET request to /offers/{id} with authorization header and posted offer and system returns OK(200) with offer
         //given
         String postedOfferId = postOfferResponseDto.id();
-        MockHttpServletRequestBuilder getOfferByPostedOfferId = get("/offers/" + postedOfferId);
+        MockHttpServletRequestBuilder getOfferByPostedOfferId = get("/offers/" + postedOfferId)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON);
         //when
         ResultActions performGetOfferByPostedOfferId = mockMvc.perform(getOfferByPostedOfferId);
         //then

@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.time.ZoneOffset;
 public class JwtAuthenticator {
     
     private final AuthenticationManager authenticationManager;
+    private final Clock clock = Clock.system(ZoneOffset.UTC);
     
     public JwtResponseDto authenticateAndGenerateToken(final TokenRequestDto requestDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -37,7 +39,7 @@ public class JwtAuthenticator {
     
     private String createToken(final User user) {
         String subject = user.getUsername();
-        Instant issuedAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+        Instant issuedAt = LocalDateTime.now(clock).toInstant(ZoneOffset.UTC);
         Instant expiresAt = issuedAt.plus(Duration.ofDays(30));
         String issuer = "JobOffers";
         String secretKey = "secretKey";
