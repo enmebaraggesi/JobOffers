@@ -22,6 +22,7 @@ import java.time.ZoneOffset;
 public class JwtAuthenticator {
     
     private final AuthenticationManager authenticationManager;
+    private final JwtConfigurationProperties properties;
     private final Clock clock = Clock.system(ZoneOffset.UTC);
     
     public JwtResponseDto authenticateAndGenerateToken(final TokenRequestDto requestDto) {
@@ -40,9 +41,9 @@ public class JwtAuthenticator {
     private String createToken(final User user) {
         String subject = user.getUsername();
         Instant issuedAt = LocalDateTime.now(clock).toInstant(ZoneOffset.UTC);
-        Instant expiresAt = issuedAt.plus(Duration.ofDays(30));
-        String issuer = "JobOffers";
-        String secretKey = "secretKey";
+        Instant expiresAt = issuedAt.plus(Duration.ofDays(properties.expirationDs()));
+        String issuer = properties.issuer();
+        String secretKey = properties.secret();
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         return JWT.create()
                   .withSubject(subject)
