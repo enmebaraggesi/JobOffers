@@ -5,6 +5,7 @@ import com.joboffers.SampleJobOffersTestRequest;
 import com.joboffers.infrastructure.apivalidation.dto.ApiValidationResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,6 +29,7 @@ class ApiValidationErrorIntegrationTest extends BaseIntegrationTest implements S
     }
     
     @Test
+    @WithMockUser
     public void should_return_bad_request_and_messages_when_some_data_in_offer_request_is_empty() throws Exception {
         //given & when
         ResultActions perform = mockMvc.perform(post("/offers")
@@ -43,6 +45,7 @@ class ApiValidationErrorIntegrationTest extends BaseIntegrationTest implements S
     }
     
     @Test
+    @WithMockUser
     public void should_return_bad_request_and_messages_when_company_in_offer_request_is_null() throws Exception {
         //given & when
         ResultActions perform = mockMvc.perform(post("/offers")
@@ -58,6 +61,7 @@ class ApiValidationErrorIntegrationTest extends BaseIntegrationTest implements S
     }
     
     @Test
+    @WithMockUser
     public void should_return_conflict_message_when_provided_offer_with_already_existing_url() throws Exception {
         //given
         String url = "https://joboffers.com";
