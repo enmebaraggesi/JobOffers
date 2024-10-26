@@ -5,6 +5,7 @@ import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.domain.offer.error.DuplicateOfferUrlException;
 import com.joboffers.domain.offer.error.OfferNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class OfferFacade {
     private final ExternalFetchable offerFetcher;
     private final OfferInspector offerInspector;
     
+    @Cacheable("jobOffers")
     public List<OfferResponseDto> findAllOffers() {
         List<Offer> offers = repository.findAll();
         return OfferMapper.mapOfferListToOfferResponseDtoList(offers);
