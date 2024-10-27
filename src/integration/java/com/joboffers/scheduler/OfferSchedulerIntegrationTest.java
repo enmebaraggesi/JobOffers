@@ -7,9 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 
@@ -22,9 +19,6 @@ class OfferSchedulerIntegrationTest extends BaseIntegrationTest {
     
     @SpyBean
     OfferClient offerClient;
-    
-    @Container
-    public static final MongoDBContainer MONGO_DB_CONTAINER = new MongoDBContainer(DockerImageName.parse("mongo:5.0"));
     
     @DynamicPropertySource
     public static void mongoProperties(DynamicPropertyRegistry registry) {

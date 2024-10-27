@@ -21,9 +21,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -45,9 +42,6 @@ class TypicalPathUserRegisteredAndFoundOffersIntegrationTest extends BaseIntegra
     
     @Autowired
     OfferFacade offerFacade;
-    
-    @Container
-    public static final MongoDBContainer MONGO_DB_CONTAINER = new MongoDBContainer(DockerImageName.parse("mongo:5.0"));
     
     @DynamicPropertySource
     public static void mongoProperties(DynamicPropertyRegistry registry) {
