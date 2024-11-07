@@ -15,9 +15,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 
+import java.time.Duration;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,7 +52,6 @@ class RedisCacheIntegrationTest extends BaseIntegrationTest {
     
     @Test
     public void should_save_offers_to_cache_then_invalidate_by_time_to_live() throws Exception {
-        //given
         //step 1. user registration
         MvcResult mvcResult1 = mockMvc.perform(post("/register")
                                                        .content("""
@@ -67,6 +68,7 @@ class RedisCacheIntegrationTest extends BaseIntegrationTest {
                 () -> assertThat(registeredDto.id()).isNotNull(),
                 () -> assertThat(registeredDto.created()).isTrue()
         );
+        
         
         //step 2. obtaining jwt token
         MvcResult mvcResult2 = mockMvc.perform(post("/token")
@@ -85,15 +87,28 @@ class RedisCacheIntegrationTest extends BaseIntegrationTest {
                 () -> assertThat(token).matches(Pattern.compile("^[\\w-]+\\.[\\w-]+\\.[\\w-]+$"))
         );
         
-        //when
+        
         //step 3. making /offers request
         mockMvc.perform(get("/offers")
                                 .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)).andReturn();
         
-        //then
+        
         //step 4. cache is verified
         verify(offerFacade, times(1)).findAllOffers();
         assertThat(cacheManager.getCacheNames().contains("jobOffers")).isTrue();
+        
+        
+        //step 5. cache timeout is verified
+        await().atMost(Duration.ofSeconds(4))
+               .pollInterval(Duration.ofSeconds(1))
+               .untilAsserted(
+                       () -> {
+                           mockMvc.perform(get("/offers")
+                                                   .header("Authorization", "Bearer " + token)
+                                                   .contentType(MediaType.APPLICATION_JSON));
+                           verify(offerFacade, times(2)).findAllOffers();
+                       }
+               );
     }
 }
