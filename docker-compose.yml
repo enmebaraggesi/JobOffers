@@ -10,6 +10,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_ROOT_DATABASE: admin
       MONGO_INITDB_DATABASE: job-offers
     volumes:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
@@ -20,8 +21,9 @@ services:
     ports:
       - '8081:8081'
     environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
       ME_CONFIG_MONGODB_URL: mongodb://root:pass@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
 
   redis:
     image: redis
@@ -36,3 +38,17 @@ services:
       - REDIS_HOSTS=local:redis:6379
     ports:
       - "8082:8081"
+
+  job-offers:
+    container_name: job_offers
+    build: .
+#    image: 536697262100.dkr.ecr.eu-central-1.amazonaws.com/job-offers:latest
+    restart: always
+    ports:
+      - "8000:8080"
+    environment:
+      MONGO_USER: admin
+      MONGO_PASSWORD: admin
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      MONGO_DB_NAME: job-offers
